@@ -4,11 +4,13 @@ export interface ServerToClientEvents {
   roomList: (rooms: string[]) => void;
   joined: (room: string) => void;
   _error: (errorMessage: string) => void;
+  isTypingIndicator: (nickname: string) => void; // added for the isTyping Indicator 3/5
 }
 
 export interface ClientToServerEvents {
   message: (message: string, to: string) => void;
   join: (room: string) => void;
+  typing: () => void; // added for the isTyping Indicator 3/5
 }
 
 export interface InterServerEvents {}
