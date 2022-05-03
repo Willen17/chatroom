@@ -1,4 +1,5 @@
-import "./style.css";
+import "./App.css";
+
 import { io, Socket } from "socket.io-client";
 import { ServerToClientEvents, ClientToServerEvents } from "../../types";
 
@@ -16,6 +17,10 @@ form?.addEventListener("submit", function (e) {
   }
 });
 
+const writeMessage = () => {
+  console.log("button pressed");
+};
+
 socket.on("welcome", (message) => {
   console.log(message);
 });
@@ -26,3 +31,17 @@ socket.on("chat message", (message) => {
   messages?.appendChild(item);
   window.scrollTo(0, document.body.scrollHeight);
 });
+
+function App() {
+  return (
+    <div className="App">
+      <ul id="messages"></ul>
+      <form id="form" action="" onSubmit={() => writeMessage()}>
+        <input id="input" />
+        <button>Send</button>
+      </form>
+    </div>
+  );
+}
+
+export default App;
