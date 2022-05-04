@@ -7,6 +7,8 @@ export type ContextType = {
   rooms: String[];
   setCurrentRoom: React.Dispatch<React.SetStateAction<String>>;
   currentRoom: String;
+  clients: String[];
+  noOfClients: Number;
 };
 
 export const SocketContext = createContext<ContextType | null>(null);
@@ -30,31 +32,38 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
     });
     setSocket(newSocket);
   }, []);
-  
+
   useEffect(() => {
     // to list all rooms, put in a use effect
     socket?.on("roomList", (rooms) => {
       console.log(rooms);
       setRooms(rooms);
     });
-    
+
     // fetch the number of clients in the room
     socket?.on("clientsInRoom", (noOfClients: number) => {
       setNoOfClients(noOfClients);
     });
-    
+
     // fetch the list of clients' nickname in the room
     socket?.on("ListOfClientsInRoom", (clients: string[]) => {
       setClients(clients);
     });
   }, [socket]);
-  
+
   console.log("no. of clients in room: ", noOfClients);
   console.log(clients);
 
   return (
     <SocketContext.Provider
-      value={{ socket, rooms, setCurrentRoom, currentRoom }}
+      value={{
+        socket,
+        rooms,
+        setCurrentRoom,
+        currentRoom,
+        noOfClients,
+        clients,
+      }}
     >
       {children}
     </SocketContext.Provider>
