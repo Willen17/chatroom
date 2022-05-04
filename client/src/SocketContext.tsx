@@ -7,6 +7,8 @@ export type ContextType = {
   rooms: String[];
   setCurrentRoom: React.Dispatch<React.SetStateAction<String>>;
   currentRoom: String;
+  loggedIn: boolean;
+  setLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const SocketContext = createContext<ContextType | null>(null);
@@ -20,6 +22,7 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
     useState<Socket<ServerToClientEvents, ClientToServerEvents>>();
   const [currentRoom, setCurrentRoom] = useState<String>("");
   const [rooms, setRooms] = useState<String[]>([]);
+  const [loggedIn, setLoggedIn] = useState<boolean>(false);
 
   useEffect(() => {
     const newSocket: Socket<ServerToClientEvents, ClientToServerEvents> = io({
@@ -40,7 +43,14 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
 
   return (
     <SocketContext.Provider
-      value={{ socket, rooms, setCurrentRoom, currentRoom }}
+      value={{
+        socket,
+        rooms,
+        setCurrentRoom,
+        currentRoom,
+        loggedIn,
+        setLoggedIn,
+      }}
     >
       {children}
     </SocketContext.Provider>

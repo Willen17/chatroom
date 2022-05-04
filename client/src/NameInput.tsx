@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ContextType, useSocket } from "./SocketContext";
 
 const NameInput = () => {
-  const { socket } = useSocket() as ContextType;
+  const { socket, setLoggedIn } = useSocket() as ContextType;
   const [userName, setUserName] = useState<string>("");
   const navigate = useNavigate();
 
@@ -25,6 +25,7 @@ const NameInput = () => {
     //If the connection is succeded then this part runs
     socket?.on("connected", (nickname) => {
       console.log("Connected: ", nickname);
+      setLoggedIn(true);
       navigate("/room");
     });
   }, [socket]);
