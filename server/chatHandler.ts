@@ -6,7 +6,6 @@ export default (io: Server, socket: Socket) => {
     const shouldBroadcastRooms: boolean = !getRooms(io).includes(room); //Om det ya rummet inte finns med i listan getRooms, då blir det true och skapar ett nytt rum
 
     socket.join(room);
-
     if (shouldBroadcastRooms) {
       io.emit("roomList", getRooms(io));
     }
