@@ -1,28 +1,75 @@
-# Socket.io with Typescript
+# Chatroom - with Socket.io & React Typescript
 
-## Install & Run
+**** description to be updated *****
 
-Will run both client and server in parallel
+This project is created with React TS in frontend and Socket.io in backend. 
 
-1. `npm install`
-2. `npm start`
+[To repo](https://github.com/Willen17/chatroom/ "Chatroom - with Socket.io & React Typescript")
 
-### Installation in two tabs
+### Developers
+
+William Saar (https://github.com/Willen17) </br>
+Millie Cheung (https://github.com/millie-wy)
+
+### Getting started
+
+#### Install & Run
+
+Run both client and server in parallel
+
+  ```
+  npm install
+  npm start
+  ```
+
+#### Installation in two tabs
 
 Open two terminals and run the following commands
 
-1. `npm run client-install`
-2. `npm run server-install`
-
-### Run project in two tabs
+   ```
+  npm run client-install
+  npm run server-install
+  ```
+   
+#### Run project in two tabs
 
 Open two terminals and run the following commands
 
-1. `npm run client`
-2. `npm run server`
-
-### Remove node_modules
+  ```
+  npm run client`
+  npm run server`
+  ```
+  
+#### Remove node_modules
 
 Run the follow command to remove all three node_modules folders
 
-- `npm run rm-node-modules`.
+  ```
+  npm run rm-node-modules
+  ```
+
+---
+
+(This is a group assignment from my school)
+
+Krav för godkänt:
+
+- [ ] 1. Användaren får börja med att välja ett eget visningsnamn när den besöker sidan.
+- [ ] 2. Det ska gå att skapa ett rum (och samtidigt gå med i rummet).
+- [ ] 3. Det ska gå att lämna ett rum (tomma rum ska automatiskt försvinna).
+- [ ] 4. Samtliga rum skall vara synligt i en lista
+- [ ] 5. De går att gå med i ett rum genom att klicka på det i listan.
+- [ ] 6. När en användare går med i ett nytt rum ska befintligt rum lämnas automatiskt.
+- [ ] 7. Användare ska kunna skicka och läsa nya meddelanden i rummet de har gått med i
+- [ ] 8. När en användare håller på att skriva ett meddelande skall det synas för alla andra i rummet.
+- [x] 9. Git & GitHub har använts.
+- [x] 10. Projektmappen innehåller en README.md fil.
+- [x] 11. Uppgiften lämnas in i tid!
+
+Krav för väl godkänt:
+
+- [ ] 1. Alla punkter för godkänt är uppfyllda.
+- [ ] 2. Varje rum i listan skall även visa vilka användare som finns i rummet .
+- [ ] 3. Det ska gå att ha privata konversationer med enskilda användare (DM’s).
+- [ ] 4. Historik ska sparas för skickade meddelanden och visas när en konversation öppnas (gäller både för Rum och för DM’s).
+- [ ] 5. När sidan laddas om ska användaren behålla sitt användarnamn, läggas tillbaka i konversationen som den befann sig i (Rum eller DM) och kunna sina läsa tidigare DM’s.
