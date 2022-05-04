@@ -1,11 +1,11 @@
 import { CSSProperties, useEffect, useState } from "react";
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import IsTypingBlock from "./components/IsTypingBlock";
 import { ContextType, useSocket } from "./SocketContext";
 
 const ChatInput = () => {
   const { socket, currentRoom } = useSocket() as ContextType;
   const [chatMessage, setChatMessage] = useState<string>("");
-  const location = useLocation();
   const navigate = useNavigate();
 
   const updateChatMessage = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -53,17 +53,35 @@ const ChatInput = () => {
         </button>
       </div>
       <ul id="messages"></ul>
-      <form onSubmit={handleSubmit} id="form">
-        <input
-          type="text"
-          value={chatMessage}
-          onChange={updateChatMessage}
-          id="input"
-        />
-        <button type="submit">Send</button>
-      </form>
+      <div style={blockAndFormDivStyle}>
+        <IsTypingBlock />
+        <form onSubmit={handleSubmit} id="form">
+          <input
+            type="text"
+            value={chatMessage}
+            onChange={updateChatMessage}
+            onKeyDown={() => {
+              socket?.emit("typing");
+            }}
+            id="input"
+          />
+          <button type="submit">Send</button>
+        </form>
+      </div>
     </div>
   );
+};
+
+const blockAndFormDivStyle: CSSProperties = {
+  padding: "0.25rem",
+  position: "fixed",
+  bottom: 0,
+  left: "20vw",
+  right: 0,
+  display: "flex",
+  flexDirection: "column",
+  height: "4.5rem",
+  boxSizing: "border-box",
 };
 
 const buttonStyle: CSSProperties = {
