@@ -10,17 +10,16 @@ export default (io: Server, socket: Socket) => {
       io.emit("roomList", getRooms(io));
     }
 
-    // show number of users in the room (in console log for now)
+    // show number of users in the room
     const numClients = io.sockets.adapter.rooms.get(room)?.size;
-    console.log(numClients);
+    io.emit("clientsInRoom", numClients);
 
-    // show a list of the clients in the room (in console log for now)
+    // show a list of the clients in the room
     let roomUsers: string[] = [];
-
     (await io.in(room).fetchSockets()).map((item) =>
       roomUsers.push(item.data.nickname)
     );
-    console.log(roomUsers);
+    io.emit("ListOfClientsInRoom", roomUsers);
 
     socket.emit("joined", room);
   });
