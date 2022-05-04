@@ -23,11 +23,10 @@ const ChatInput = () => {
     }
   };
 
-  // leave a chatroom (for now it is only showing console log)
+  // leave a chatroom (navigate should be added later)
   const leaveRoom = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
     // navigate(-1)
-    console.log("leave room");
+    socket?.disconnect();
   };
 
   useEffect(() => {
