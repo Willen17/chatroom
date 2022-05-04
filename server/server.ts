@@ -13,7 +13,7 @@ const io = new Server<
   ServerToClientEvents,
   InterServerEvents,
   ServerSocketData
->();
+>({ path: "/socket" });
 
 io.use((socket: Socket, next) => {
   const nickname: string = socket.handshake.auth.nickname;
