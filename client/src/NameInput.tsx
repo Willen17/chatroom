@@ -153,6 +153,8 @@ const NameInput = () => {
                 />
                 <TextField
                   fullWidth
+                  autoComplete="off"
+                  autoCorrect="off"
                   sx={formStyling}
                   type="text"
                   value={userName}
