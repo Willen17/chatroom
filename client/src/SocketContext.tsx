@@ -18,6 +18,8 @@ type Props = {
 const SocketProvider: React.FC<Props> = ({ children }) => {
   const [socket, setSocket] =
     useState<Socket<ServerToClientEvents, ClientToServerEvents>>();
+  const [noOfClients, setNoOfClients] = useState<number>(0);
+  const [clients, setClients] = useState<string[]>([]);
   const [currentRoom, setCurrentRoom] = useState<String>("");
   const [rooms, setRooms] = useState<String[]>([]);
 
@@ -26,17 +28,29 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
       autoConnect: false,
       path: "/socket",
     });
-
     setSocket(newSocket);
   }, []);
-
+  
   useEffect(() => {
-    //To list all rooms, put in a use effect
+    // to list all rooms, put in a use effect
     socket?.on("roomList", (rooms) => {
       console.log(rooms);
       setRooms(rooms);
     });
+    
+    // fetch the number of clients in the room
+    socket?.on("clientsInRoom", (noOfClients: number) => {
+      setNoOfClients(noOfClients);
+    });
+    
+    // fetch the list of clients' nickname in the room
+    socket?.on("ListOfClientsInRoom", (clients: string[]) => {
+      setClients(clients);
+    });
   }, [socket]);
+  
+  console.log("no. of clients in room: ", noOfClients);
+  console.log(clients);
 
   return (
     <SocketContext.Provider

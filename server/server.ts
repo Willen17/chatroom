@@ -30,9 +30,13 @@ io.on("connection", (socket) => {
   if (socket.data.nickname) {
     socket.emit("connected", socket.data.nickname);
     socket.emit("roomList", getRooms(io));
+
+    registerChatHandler(io, socket);
   }
 
-  registerChatHandler(io, socket);
+  socket.on("disconnect", function () {
+    console.log("user disconnected");
+  });
 });
 
 io.listen(3001);

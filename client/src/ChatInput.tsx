@@ -1,11 +1,12 @@
-import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { CSSProperties, useEffect, useState } from "react";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { ContextType, useSocket } from "./SocketContext";
 
 const ChatInput = () => {
   const { socket, currentRoom } = useSocket() as ContextType;
   const [chatMessage, setChatMessage] = useState<string>("");
   const location = useLocation();
+  const navigate = useNavigate();
 
   const updateChatMessage = (e: React.ChangeEvent<HTMLInputElement>) => {
     setChatMessage(e.target.value);
@@ -19,6 +20,12 @@ const ChatInput = () => {
     } else {
       console.log("Text cannot be empty");
     }
+  };
+
+  // leave a chatroom (navigate should be added later)
+  const leaveRoom = (e: React.MouseEvent<HTMLButtonElement>) => {
+    // navigate(-1)
+    socket?.disconnect();
   };
 
   useEffect(() => {
@@ -40,19 +47,33 @@ const ChatInput = () => {
 
   return (
     <div style={{ width: "80vw" }}>
+      <div style={{ background: "pink", height: "3rem", textAlign: "end" }}>
+        <button style={buttonStyle} onClick={leaveRoom}>
+          Leave
+        </button>
+      </div>
       <ul id="messages"></ul>
       <form onSubmit={handleSubmit} id="form">
         <input
           type="text"
           value={chatMessage}
           onChange={updateChatMessage}
-          placeholder="Enter a room"
           id="input"
         />
         <button type="submit">Send</button>
       </form>
     </div>
   );
+};
+
+const buttonStyle: CSSProperties = {
+  background: "#333",
+  border: "none",
+  padding: ".6rem",
+  margin: "0.25rem",
+  borderRadius: "3px",
+  outline: "none",
+  color: "#fff",
 };
 
 export default ChatInput;
