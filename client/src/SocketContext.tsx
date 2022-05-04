@@ -4,6 +4,9 @@ import { ServerToClientEvents, ClientToServerEvents } from "../../types";
 
 export type ContextType = {
   socket: Socket<ServerToClientEvents, ClientToServerEvents> | undefined;
+  rooms: String[];
+  setCurrentRoom: React.Dispatch<React.SetStateAction<String>>;
+  currentRoom: String;
 };
 
 export const SocketContext = createContext<ContextType | null>(null);
@@ -15,6 +18,8 @@ type Props = {
 const SocketProvider: React.FC<Props> = ({ children }) => {
   const [socket, setSocket] =
     useState<Socket<ServerToClientEvents, ClientToServerEvents>>();
+  const [currentRoom, setCurrentRoom] = useState<String>("");
+  const [rooms, setRooms] = useState<String[]>([]);
 
   useEffect(() => {
     const newSocket: Socket<ServerToClientEvents, ClientToServerEvents> = io({
@@ -25,13 +30,18 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
     setSocket(newSocket);
   }, []);
 
-  // To list all rooms, put in a use effect
-  // socket?.on("roomList", (rooms) => {
-  //   console.log(rooms);
-  // });
+  useEffect(() => {
+    //To list all rooms, put in a use effect
+    socket?.on("roomList", (rooms) => {
+      console.log(rooms);
+      setRooms(rooms);
+    });
+  }, [socket]);
 
   return (
-    <SocketContext.Provider value={{ socket }}>
+    <SocketContext.Provider
+      value={{ socket, rooms, setCurrentRoom, currentRoom }}
+    >
       {children}
     </SocketContext.Provider>
   );
