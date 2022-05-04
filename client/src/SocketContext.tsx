@@ -12,13 +12,14 @@ type Props = {
   children: React.ReactNode;
 };
 
-const SocketProvider = ({ children }: Props) => {
+const SocketProvider: React.FC<Props> = ({ children }) => {
   const [socket, setSocket] =
     useState<Socket<ServerToClientEvents, ClientToServerEvents>>();
 
   useEffect(() => {
     const newSocket: Socket<ServerToClientEvents, ClientToServerEvents> = io({
       autoConnect: false,
+      path: "/socket",
     });
 
     setSocket(newSocket);
