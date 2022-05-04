@@ -10,6 +10,8 @@ export type ContextType = {
   clients: String[];
   noOfClients: Number;
   isTypingBlock: string;
+  loggedIn: boolean;
+  setLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const SocketContext = createContext<ContextType | null>(null);
@@ -26,6 +28,7 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
   const [currentRoom, setCurrentRoom] = useState<String>("");
   const [rooms, setRooms] = useState<String[]>([]);
   const [isTypingBlock, setIsTypingBlock] = useState<string>("");
+  const [loggedIn, setLoggedIn] = useState<boolean>(false);
 
   useEffect(() => {
     const newSocket: Socket<ServerToClientEvents, ClientToServerEvents> = io({
@@ -74,6 +77,8 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
         noOfClients,
         clients,
         isTypingBlock,
+        loggedIn,
+        setLoggedIn,
       }}
     >
       {children}
