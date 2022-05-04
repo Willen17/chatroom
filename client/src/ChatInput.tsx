@@ -3,11 +3,10 @@ import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { ContextType, useSocket } from "./SocketContext";
 
 const ChatInput = () => {
-  const { socket } = useSocket() as ContextType;
+  const { socket, currentRoom } = useSocket() as ContextType;
   const [chatMessage, setChatMessage] = useState<string>("");
   const location = useLocation();
   const navigate = useNavigate();
-  const { state } = location;
 
   const updateChatMessage = (e: React.ChangeEvent<HTMLInputElement>) => {
     setChatMessage(e.target.value);
@@ -16,7 +15,7 @@ const ChatInput = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (chatMessage.length) {
-      socket!.emit("message", chatMessage, state as string);
+      socket!.emit("message", chatMessage, currentRoom as string);
       console.log("från undre init " + chatMessage);
     } else {
       console.log("Text cannot be empty");
@@ -47,7 +46,7 @@ const ChatInput = () => {
   }, [socket]);
 
   return (
-    <div>
+    <div style={{ width: "80vw" }}>
       <div style={{ background: "pink", height: "3rem", textAlign: "end" }}>
         <button style={buttonStyle} onClick={leaveRoom}>
           Leave

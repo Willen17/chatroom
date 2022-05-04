@@ -11,10 +11,11 @@ function App() {
     <SocketProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Layout />} />
-          <Route index element={<NameInput />} />
-          <Route path="/room" element={<RoomInput />} />
-          <Route path="/chat" element={<ChatInput />} />
+          <Route path="/" element={<Layout />}>
+            <Route index element={<NameInput />} />
+            <Route path="/room" element={<RoomInput />} />
+            <Route path="/chat" element={<ChatInput />} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </SocketProvider>

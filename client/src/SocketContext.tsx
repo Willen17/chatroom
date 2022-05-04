@@ -4,6 +4,9 @@ import { ServerToClientEvents, ClientToServerEvents } from "../../types";
 
 export type ContextType = {
   socket: Socket<ServerToClientEvents, ClientToServerEvents> | undefined;
+  rooms: String[];
+  setCurrentRoom: React.Dispatch<React.SetStateAction<String>>;
+  currentRoom: String;
 };
 
 export const SocketContext = createContext<ContextType | null>(null);
@@ -17,6 +20,8 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
     useState<Socket<ServerToClientEvents, ClientToServerEvents>>();
   const [noOfClients, setNoOfClients] = useState<number>(0);
   const [clients, setClients] = useState<string[]>([]);
+  const [currentRoom, setCurrentRoom] = useState<String>("");
+  const [rooms, setRooms] = useState<String[]>([]);
 
   useEffect(() => {
     const newSocket: Socket<ServerToClientEvents, ClientToServerEvents> = io({
@@ -25,25 +30,32 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
     });
     setSocket(newSocket);
   }, []);
-
-  // fetch the number of clients in the room
+  
   useEffect(() => {
+    // to list all rooms, put in a use effect
+    socket?.on("roomList", (rooms) => {
+      console.log(rooms);
+      setRooms(rooms);
+    });
+    
+    // fetch the number of clients in the room
     socket?.on("clientsInRoom", (noOfClients: number) => {
       setNoOfClients(noOfClients);
     });
-  });
-  console.log("no. of clients in room: ", noOfClients);
-
-  // fetch the list of clients' nickname in the room
-  useEffect(() => {
+    
+    // fetch the list of clients' nickname in the room
     socket?.on("ListOfClientsInRoom", (clients: string[]) => {
       setClients(clients);
     });
-  });
+  }, [socket]);
+  
+  console.log("no. of clients in room: ", noOfClients);
   console.log(clients);
 
   return (
-    <SocketContext.Provider value={{ socket }}>
+    <SocketContext.Provider
+      value={{ socket, rooms, setCurrentRoom, currentRoom }}
+    >
       {children}
     </SocketContext.Provider>
   );

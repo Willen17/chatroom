@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ContextType, useSocket } from "./SocketContext";
 
 const RoomInput = () => {
-  const { socket } = useSocket() as ContextType;
+  const { socket, setCurrentRoom } = useSocket() as ContextType;
   const [roomName, setRoomName] = useState<string>("");
   const navigate = useNavigate();
 
@@ -16,6 +16,7 @@ const RoomInput = () => {
     if (roomName.length) {
       socket!.emit("join", roomName);
       console.log("från under room");
+      setCurrentRoom(roomName);
     } else {
       console.log("Room name cannot be empty");
     }
@@ -24,7 +25,7 @@ const RoomInput = () => {
   useEffect(() => {
     socket?.on("joined", (room) => {
       console.log("Joined room: ", room);
-      navigate("/chat", { state: room });
+      navigate("/chat");
     });
   }, [socket]);
 
