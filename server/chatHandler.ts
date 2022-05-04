@@ -24,6 +24,10 @@ export default (io: Server, socket: Socket) => {
     socket.emit("joined", room);
   });
 
+  socket.on("typing", () =>
+    socket.broadcast.emit("isTypingIndicator", socket.data.nickname)
+  );
+
   socket.on("message", (message, to) => {
     if (!socket.data.nickname) {
       return socket.emit("_error", "Missing nickname on socket");

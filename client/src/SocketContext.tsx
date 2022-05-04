@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { Socket, io } from "socket.io-client";
-import { ServerToClientEvents, ClientToServerEvents } from "../../types";
+import { io, Socket } from "socket.io-client";
+import { ClientToServerEvents, ServerToClientEvents } from "../../types";
 
 export type ContextType = {
   socket: Socket<ServerToClientEvents, ClientToServerEvents> | undefined;
@@ -9,6 +9,7 @@ export type ContextType = {
   currentRoom: String;
   clients: String[];
   noOfClients: Number;
+  isTypingBlock: string;
 };
 
 export const SocketContext = createContext<ContextType | null>(null);
@@ -24,6 +25,7 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
   const [clients, setClients] = useState<string[]>([]);
   const [currentRoom, setCurrentRoom] = useState<String>("");
   const [rooms, setRooms] = useState<String[]>([]);
+  const [isTypingBlock, setIsTypingBlock] = useState<string>("");
 
   useEffect(() => {
     const newSocket: Socket<ServerToClientEvents, ClientToServerEvents> = io({
@@ -49,6 +51,14 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
     socket?.on("ListOfClientsInRoom", (clients: string[]) => {
       setClients(clients);
     });
+
+    // fetch the typing status of user
+    socket?.on("isTypingIndicator", (nickname: string) => {
+      if (nickname) {
+        setIsTypingBlock(`${nickname} is typing...`);
+        setTimeout(() => setIsTypingBlock(""), 2000);
+      }
+    });
   }, [socket]);
 
   console.log("no. of clients in room: ", noOfClients);
@@ -63,6 +73,7 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
         currentRoom,
         noOfClients,
         clients,
+        isTypingBlock,
       }}
     >
       {children}
