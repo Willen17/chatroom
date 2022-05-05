@@ -1,6 +1,7 @@
 import { Box } from "@mui/material";
 import { useState } from "react";
 import { Outlet } from "react-router-dom";
+import Footer from "./Footer";
 import Header from "./Header";
 import { ContextType, useSocket } from "./SocketContext";
 
@@ -19,9 +20,18 @@ const Layout = () => {
     >
       <Header setMenuIsOpen={setMenuIsOpen} />
       <Outlet />
+      <Footer />
     </Box>
   ) : (
-    <Outlet />
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      <Outlet />
+      <Footer />
+    </Box>
   );
 };
 

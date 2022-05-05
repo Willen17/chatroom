@@ -34,6 +34,7 @@ const ChatInput = () => {
         display: "flex",
         flexDirection: "column",
         boxSizing: "border-box",
+        zIndex: 99,
       }}
     >
       <Box
@@ -83,14 +84,16 @@ const ChatInput = () => {
         </Button>
       </Box>
 
-      <ul  id="messages"
+      <ul
+        id="messages"
         style={{
           listStyleType: "none",
           margin: 0,
           padding: 0,
           height: "80vh",
           overflowY: "scroll",
-        }}>
+        }}
+      >
         {messageList?.map((message, index) => (
           <li key={index}>
             {message.from}: {message.message}
