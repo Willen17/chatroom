@@ -17,6 +17,7 @@ const ListOfRooms = () => {
     console.log(e.currentTarget.innerText);
     let theRoom = e.currentTarget.innerText;
     if (theRoom) {
+      socket!.emit("leave", currentRoom);
       socket!.emit("join", theRoom);
       console.log("från under room");
       setCurrentRoom(theRoom);
