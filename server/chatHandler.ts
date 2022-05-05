@@ -40,5 +40,6 @@ export default (io: Server, socket: Socket) => {
   socket.on("leave", (room) => {
     socket.leave(room);
     console.log("user left the room");
+    io.emit("roomList", getRooms(io));
   });
 };
