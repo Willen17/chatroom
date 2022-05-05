@@ -1,5 +1,5 @@
 import { Box, Button, Typography } from "@mui/material";
-import { CSSProperties, useState } from "react";
+import { CSSProperties, useEffect, useState } from "react";
 import IsTypingBlock from "./components/IsTypingBlock";
 import { ContextType, useSocket } from "./SocketContext";
 
@@ -21,6 +21,11 @@ const ChatInput = () => {
       return;
     }
   };
+
+  useEffect(() => {
+    const messageList = document.getElementById("messages");
+    messageList!.innerHTML = "";
+  }, [currentRoom]);
 
   return (
     <div style={{ width: "80vw" }}>
