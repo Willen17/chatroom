@@ -13,6 +13,11 @@ const ChatInput = () => {
     setChatMessage(e.target.value);
   };
 
+  useEffect(() => {
+    const msgElement = document.getElementById("messages");
+    msgElement!.scrollTo(0, document.body.scrollHeight);
+  }, [messageList]);
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (chatMessage.length) {
@@ -83,14 +88,16 @@ const ChatInput = () => {
         </Button>
       </Box>
 
-      <ul  id="messages"
+      <ul
+        id="messages"
         style={{
           listStyleType: "none",
           margin: 0,
-          padding: 0,
-          height: "80vh",
+          padding: "1rem 0",
+          height: "calc(100vh - 12rem)",
           overflowY: "scroll",
-        }}>
+        }}
+      >
         {messageList?.map((message, index) => (
           <li key={index}>
             {message.from}: {message.message}
