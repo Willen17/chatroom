@@ -4,7 +4,8 @@ import IsTypingBlock from "./components/IsTypingBlock";
 import { ContextType, useSocket } from "./SocketContext";
 
 const ChatInput = () => {
-  const { socket, currentRoom, leaveRoom } = useSocket() as ContextType;
+  const { socket, currentRoom, leaveRoom, messagesp } =
+    useSocket() as ContextType;
   const [chatMessage, setChatMessage] = useState<string>("");
 
   const updateChatMessage = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -21,27 +22,7 @@ const ChatInput = () => {
     }
   };
 
-  useEffect(() => {
-    socket?.on("message", (message, from) => {
-      console.log(message, from.nickname);
-
-      const chatItem = document.createElement("li");
-      chatItem.textContent = from.nickname + ": " + message;
-
-      const messageList = document.getElementById("messages");
-      if (messageList) {
-        messageList.innerHTML =
-          messageList.innerHTML + `<li>${from.nickname}: ${message}</li>`;
-      }
-
-      window.scrollTo(0, document.body.scrollHeight);
-    });
-  }, [socket]);
-
-  useEffect(() => {
-    const messageList = document.getElementById("messages");
-    messageList!.innerHTML = "";
-  }, [currentRoom]);
+  console.log(messagesp);
 
   return (
     <div style={{ width: "80vw" }}>
@@ -77,7 +58,13 @@ const ChatInput = () => {
           Leave
         </Button>
       </Box>
-      <ul id="messages"></ul>
+      <ul id="messages">
+        {messagesp?.map((message, index) => (
+          <li key={index}>
+            {message.from}: {message.message}
+          </li>
+        ))}
+      </ul>
       <div style={blockAndFormDivStyle}>
         <IsTypingBlock />
         <form onSubmit={handleSubmit} id="form">

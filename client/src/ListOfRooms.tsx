@@ -20,7 +20,6 @@ const ListOfRooms = () => {
       socket!.emit("leave", currentRoom);
       socket!.emit("join", theRoom);
       console.log("från under room");
-      setCurrentRoom(theRoom);
     }
   };
 
