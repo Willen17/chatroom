@@ -1,12 +1,15 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { Socket, io } from "socket.io-client";
-import { ServerToClientEvents, ClientToServerEvents } from "../../types";
+import { io, Socket } from "socket.io-client";
+import { ClientToServerEvents, ServerToClientEvents } from "../../types";
 
 export type ContextType = {
   socket: Socket<ServerToClientEvents, ClientToServerEvents> | undefined;
   rooms: String[];
   setCurrentRoom: React.Dispatch<React.SetStateAction<String>>;
   currentRoom: String;
+  clients: String[];
+  noOfClients: Number;
+  isTypingBlock: string;
   loggedIn: boolean;
   setLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
 };
@@ -24,6 +27,7 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
   const [clients, setClients] = useState<string[]>([]);
   const [currentRoom, setCurrentRoom] = useState<String>("");
   const [rooms, setRooms] = useState<String[]>([]);
+  const [isTypingBlock, setIsTypingBlock] = useState<string>("");
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
 
   useEffect(() => {
@@ -33,25 +37,33 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
     });
     setSocket(newSocket);
   }, []);
-  
+
   useEffect(() => {
     // to list all rooms, put in a use effect
     socket?.on("roomList", (rooms) => {
       console.log(rooms);
       setRooms(rooms);
     });
-    
+
     // fetch the number of clients in the room
     socket?.on("clientsInRoom", (noOfClients: number) => {
       setNoOfClients(noOfClients);
     });
-    
+
     // fetch the list of clients' nickname in the room
     socket?.on("ListOfClientsInRoom", (clients: string[]) => {
       setClients(clients);
     });
+
+    // fetch the typing status of user
+    socket?.on("isTypingIndicator", (nickname: string) => {
+      if (nickname) {
+        setIsTypingBlock(`${nickname} is typing...`);
+        setTimeout(() => setIsTypingBlock(""), 2000);
+      }
+    });
   }, [socket]);
-  
+
   console.log("no. of clients in room: ", noOfClients);
   console.log(clients);
 
@@ -62,6 +74,9 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
         rooms,
         setCurrentRoom,
         currentRoom,
+        noOfClients,
+        clients,
+        isTypingBlock,
         loggedIn,
         setLoggedIn,
       }}
