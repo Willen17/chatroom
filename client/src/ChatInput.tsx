@@ -5,7 +5,8 @@ import IsTypingBlock from "./components/IsTypingBlock";
 import { ContextType, useSocket } from "./SocketContext";
 
 const ChatInput = () => {
-  const { socket, currentRoom, leaveRoom } = useSocket() as ContextType;
+  const { socket, currentRoom, leaveRoom, messageList } =
+    useSocket() as ContextType;
   const [chatMessage, setChatMessage] = useState<string>("");
 
   const updateChatMessage = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -21,23 +22,6 @@ const ChatInput = () => {
       return;
     }
   };
-
-  useEffect(() => {
-    socket?.on("message", (message, from) => {
-      console.log(message, from.nickname);
-
-      const chatItem = document.createElement("li");
-      chatItem.textContent = from.nickname + ": " + message;
-
-      const messageList = document.getElementById("messages");
-      if (messageList) {
-        messageList.innerHTML =
-          messageList.innerHTML + `<li>${from.nickname}: ${message}</li>`;
-      }
-
-      window.scrollTo(0, document.body.scrollHeight);
-    });
-  }, [socket]);
 
   useEffect(() => {
     const messageList = document.getElementById("messages");
@@ -98,16 +82,22 @@ const ChatInput = () => {
           <Logout fontSize="small" />
         </Button>
       </Box>
-      <ul
-        id="messages"
+
+      <ul  id="messages"
         style={{
           listStyleType: "none",
           margin: 0,
           padding: 0,
           height: "80vh",
           overflowY: "scroll",
-        }}
-      ></ul>
+        }}>
+        {messageList?.map((message, index) => (
+          <li key={index}>
+            {message.from}: {message.message}
+          </li>
+        ))}
+      </ul>
+
       <div style={blockAndFormDivStyle}>
         <IsTypingBlock />
         <form

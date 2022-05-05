@@ -14,7 +14,13 @@ export type ContextType = {
   loggedIn: boolean;
   setLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
   leaveRoom: () => void;
+  messageList: MessageType[];
 };
+
+interface MessageType {
+  message: string;
+  from: string;
+}
 
 export const SocketContext = createContext<ContextType | null>(null);
 
@@ -31,6 +37,7 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
   const [rooms, setRooms] = useState<String[]>([]);
   const [isTypingBlock, setIsTypingBlock] = useState<string>("");
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
+  const [messageList, setMessageList] = useState<MessageType[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -43,9 +50,19 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
 
   useEffect(() => {
     // to list all rooms, put in a use effect
-    socket?.on("roomList", (rooms) => {
+    socket?.on("roomList", (listofRooms) => {
       console.log(rooms);
-      setRooms(rooms);
+
+      setRooms(listofRooms);
+    });
+
+    // receive the new message and update in the state
+    socket?.on("message", (message, from) => {
+      let messageObject: MessageType = {
+        message: message,
+        from: from.nickname,
+      };
+      setMessageList((messagesList) => [...messagesList, messageObject]);
     });
 
     // fetch the number of clients in the room
@@ -66,6 +83,7 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
       }
     });
 
+    // set leave room of user
     socket?.on("left", (room) => {
       console.log("Left room: ", room);
       navigate("/room");
@@ -93,6 +111,7 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
         loggedIn,
         setLoggedIn,
         leaveRoom,
+        messageList,
       }}
     >
       {children}
