@@ -1,10 +1,10 @@
 import { Box, Button, Typography } from "@mui/material";
-import { CSSProperties, useEffect, useState } from "react";
+import { CSSProperties, useState } from "react";
 import IsTypingBlock from "./components/IsTypingBlock";
 import { ContextType, useSocket } from "./SocketContext";
 
 const ChatInput = () => {
-  const { socket, currentRoom, leaveRoom, messagesp } =
+  const { socket, currentRoom, leaveRoom, messageList } =
     useSocket() as ContextType;
   const [chatMessage, setChatMessage] = useState<string>("");
 
@@ -21,8 +21,6 @@ const ChatInput = () => {
       return;
     }
   };
-
-  console.log(messagesp);
 
   return (
     <div style={{ width: "80vw" }}>
@@ -59,7 +57,7 @@ const ChatInput = () => {
         </Button>
       </Box>
       <ul id="messages">
-        {messagesp?.map((message, index) => (
+        {messageList?.map((message, index) => (
           <li key={index}>
             {message.from}: {message.message}
           </li>
