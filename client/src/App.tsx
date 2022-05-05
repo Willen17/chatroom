@@ -8,8 +8,8 @@ import SocketProvider from "./SocketContext";
 
 function App() {
   return (
-    <SocketProvider>
-      <BrowserRouter>
+    <BrowserRouter>
+      <SocketProvider>
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route index element={<NameInput />} />
@@ -17,8 +17,8 @@ function App() {
             <Route path="/chat" element={<ChatInput />} />
           </Route>
         </Routes>
-      </BrowserRouter>
-    </SocketProvider>
+      </SocketProvider>
+    </BrowserRouter>
   );
 }
 

@@ -1,3 +1,5 @@
+import { Box, Button } from "@mui/material";
+import { color } from "@mui/system";
 import { useEffect, useState } from "react";
 import { ContextType, useSocket } from "./SocketContext";
 
@@ -23,19 +25,49 @@ const ListOfRooms = () => {
   };
 
   return (
-    <div style={{ height: "100vh", width: "20vw", backgroundColor: "red" }}>
-      <ul>
+    <Box
+      sx={{
+        height: "100vh",
+        width: "20vw",
+        minWidth: "200px",
+        bgcolor: "#3D405B",
+      }}
+    >
+      <ul style={{ paddingLeft: "1rem" }}>
         {doesRoomExist ? (
           rooms.map((room, index) => (
-            <li key={index}>
-              <button onClick={handleSubmit}>{room}</button>
+            <li
+              key={index}
+              style={{
+                listStyleType: "none",
+              }}
+            >
+              <Button
+                variant="text"
+                size="small"
+                sx={{
+                  fontFamily: "League Spartan",
+                  letterSpacing: "none",
+                  fontSize: "1rem",
+                  color: "#F2CC8F",
+                  boxShadow: "none",
+                  textTransform: "capitalize",
+                  "&:hover": {
+                    color: "white",
+                    boxShadow: "none",
+                  },
+                }}
+                onClick={handleSubmit}
+              >
+                {room}
+              </Button>
             </li>
           ))
         ) : (
           <li>There are no rooms</li>
         )}
       </ul>
-    </div>
+    </Box>
   );
 };
 
