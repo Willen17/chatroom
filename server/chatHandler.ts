@@ -20,7 +20,6 @@ export default (io: Server, socket: Socket) => {
       roomUsers.push(item.data.nickname)
     );
     io.emit("ListOfClientsInRoom", roomUsers);
-
     socket.emit("joined", room);
   });
 
@@ -36,5 +35,10 @@ export default (io: Server, socket: Socket) => {
       id: socket.id,
       nickname: socket.data.nickname,
     });
+  });
+
+  socket.on("leave", (room) => {
+    socket.leave(room);
+    console.log("user left the room");
   });
 };

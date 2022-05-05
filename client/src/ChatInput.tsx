@@ -22,10 +22,12 @@ const ChatInput = () => {
     }
   };
 
-  // leave a chatroom (navigate should be added later)
+  // leave a chatroom and be redirected to roomInput
   const leaveRoom = (e: React.MouseEvent<HTMLButtonElement>) => {
-    // navigate(-1)
-    socket?.disconnect();
+    socket!.emit("leave", currentRoom);
+    setInterval(() => {
+      navigate("/room");
+    }, 1500);
   };
 
   useEffect(() => {
