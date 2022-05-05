@@ -1,12 +1,11 @@
+import { Box, Button, Typography } from "@mui/material";
 import { CSSProperties, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import IsTypingBlock from "./components/IsTypingBlock";
 import { ContextType, useSocket } from "./SocketContext";
 
 const ChatInput = () => {
-  const { socket, currentRoom } = useSocket() as ContextType;
+  const { socket, currentRoom, leaveRoom } = useSocket() as ContextType;
   const [chatMessage, setChatMessage] = useState<string>("");
-  const navigate = useNavigate();
 
   const updateChatMessage = (e: React.ChangeEvent<HTMLInputElement>) => {
     setChatMessage(e.target.value);
@@ -20,14 +19,6 @@ const ChatInput = () => {
     } else {
       return;
     }
-  };
-
-  // leave a chatroom and be redirected to roomInput
-  const leaveRoom = (e: React.MouseEvent<HTMLButtonElement>) => {
-    socket!.emit("leave", currentRoom);
-    setInterval(() => {
-      navigate("/room");
-    }, 1500);
   };
 
   useEffect(() => {
@@ -49,11 +40,38 @@ const ChatInput = () => {
 
   return (
     <div style={{ width: "80vw" }}>
-      <div style={{ background: "pink", height: "3rem", textAlign: "end" }}>
-        <button style={buttonStyle} onClick={leaveRoom}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          background: "#3D405B",
+          height: "3rem",
+          textAlign: "end",
+          placeItems: "center",
+        }}
+      >
+        <Typography variant="h5" fontFamily="League Spartan">
+          {currentRoom}
+        </Typography>
+        <Button
+          variant="contained"
+          size="small"
+          sx={{
+            fontFamily: "League Spartan",
+            textTransform: "Capitalize",
+            background: "#333",
+            border: "none",
+            padding: ".6rem",
+            margin: "0.25rem",
+            borderRadius: "3px",
+            outline: "none",
+            color: "#fff",
+          }}
+          onClick={leaveRoom}
+        >
           Leave
-        </button>
-      </div>
+        </Button>
+      </Box>
       <ul id="messages"></ul>
       <div style={blockAndFormDivStyle}>
         <IsTypingBlock />

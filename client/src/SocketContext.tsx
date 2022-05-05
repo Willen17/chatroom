@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { io, Socket } from "socket.io-client";
 import { ClientToServerEvents, ServerToClientEvents } from "../../types";
 
@@ -12,6 +13,7 @@ export type ContextType = {
   isTypingBlock: string;
   loggedIn: boolean;
   setLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
+  leaveRoom: () => void;
 };
 
 export const SocketContext = createContext<ContextType | null>(null);
@@ -29,6 +31,7 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
   const [rooms, setRooms] = useState<String[]>([]);
   const [isTypingBlock, setIsTypingBlock] = useState<string>("");
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const newSocket: Socket<ServerToClientEvents, ClientToServerEvents> = io({
@@ -62,7 +65,17 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
         setTimeout(() => setIsTypingBlock(""), 2000);
       }
     });
+
+    socket?.on("left", (room) => {
+      console.log("Left room: ", room);
+      navigate("/room");
+    });
   }, [socket]);
+
+  // leave a chatroom and be redirected to roomInput
+  const leaveRoom = () => {
+    socket!.emit("leave", currentRoom);
+  };
 
   console.log("no. of clients in room: ", noOfClients);
   console.log(clients);
@@ -79,6 +92,7 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
         isTypingBlock,
         loggedIn,
         setLoggedIn,
+        leaveRoom,
       }}
     >
       {children}

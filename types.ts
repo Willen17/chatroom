@@ -7,6 +7,7 @@ export interface ServerToClientEvents {
   ListOfClientsInRoom: (clients: string[]) => void;
   clientsInRoom: (noOfClients: number) => void;
   isTypingIndicator: (nickname: string) => void;
+  left: (room: string) => void;
 }
 
 export interface ClientToServerEvents {
