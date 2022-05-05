@@ -16,9 +16,9 @@ const ChatInput = () => {
     e.preventDefault();
     if (chatMessage.length) {
       socket!.emit("message", chatMessage, currentRoom as string);
-      console.log("från undre init " + chatMessage);
+      setChatMessage("");
     } else {
-      console.log("Text cannot be empty");
+      return;
     }
   };
 
