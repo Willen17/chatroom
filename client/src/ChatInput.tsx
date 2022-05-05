@@ -1,3 +1,4 @@
+import { Logout, Send } from "@mui/icons-material";
 import { Box, Button, Typography } from "@mui/material";
 import { CSSProperties, useEffect, useState } from "react";
 import IsTypingBlock from "./components/IsTypingBlock";
@@ -44,18 +45,33 @@ const ChatInput = () => {
   }, [currentRoom]);
 
   return (
-    <div style={{ width: "80vw" }}>
+    <Box
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        boxSizing: "border-box",
+      }}
+    >
       <Box
         sx={{
           display: "flex",
           justifyContent: "space-between",
-          background: "#3D405B",
+          background: "#F4F1DE",
           height: "3rem",
           textAlign: "end",
           placeItems: "center",
         }}
       >
-        <Typography variant="h5" fontFamily="League Spartan">
+        <Typography
+          variant="h5"
+          fontFamily="League Spartan"
+          sx={{
+            width: 1,
+            textAlign: "center",
+            ml: "4rem",
+            textTransform: "capitalize",
+          }}
+        >
           {currentRoom}
         </Typography>
         <Button
@@ -64,23 +80,52 @@ const ChatInput = () => {
           sx={{
             fontFamily: "League Spartan",
             textTransform: "Capitalize",
-            background: "#333",
+            background: "#E07A5F",
             border: "none",
-            padding: ".6rem",
+            padding: ".4rem",
             margin: "0.25rem",
-            borderRadius: "3px",
+            borderRadius: "8px",
             outline: "none",
             color: "#fff",
+            "&:hover": {
+              backgroundColor: "#333",
+              color: "#F4F1DE",
+              boxShadow: "none",
+            },
           }}
           onClick={leaveRoom}
         >
-          Leave
+          <Logout fontSize="small" />
         </Button>
       </Box>
-      <ul id="messages"></ul>
+      <ul
+        id="messages"
+        style={{
+          listStyleType: "none",
+          margin: 0,
+          padding: 0,
+          height: "80vh",
+          overflowY: "scroll",
+        }}
+      ></ul>
       <div style={blockAndFormDivStyle}>
         <IsTypingBlock />
-        <form onSubmit={handleSubmit} id="form">
+        <form
+          onSubmit={handleSubmit}
+          id="form"
+          style={{
+            background: "#3d405b",
+            padding: "0.5rem",
+            gap: "0.5rem",
+            position: "fixed",
+            bottom: 0,
+            width: "100%",
+            right: 0,
+            display: "flex",
+            boxSizing: "border-box",
+            backdropFilter: "blur(10px)",
+          }}
+        >
           <input
             type="text"
             value={chatMessage}
@@ -89,11 +134,40 @@ const ChatInput = () => {
               socket?.emit("typing");
             }}
             id="input"
+            style={{
+              border: "none",
+              padding: "0 0.8rem",
+              flexGrow: 1,
+              borderRadius: "8px",
+              margin: "0.25rem",
+            }}
           />
-          <button type="submit">Send</button>
+          <Button
+            type="submit"
+            variant="contained"
+            size="small"
+            sx={{
+              fontFamily: "League Spartan",
+              textTransform: "Capitalize",
+              background: "#81B29A",
+              border: "none",
+              padding: ".4rem",
+              margin: "0.25rem",
+              borderRadius: "8px",
+              outline: "none",
+              color: "#fff",
+              "&:hover": {
+                backgroundColor: "#333",
+                color: "#F4F1DE",
+                boxShadow: "none",
+              },
+            }}
+          >
+            <Send fontSize="small" />
+          </Button>
         </form>
       </div>
-    </div>
+    </Box>
   );
 };
 
@@ -107,16 +181,6 @@ const blockAndFormDivStyle: CSSProperties = {
   flexDirection: "column",
   height: "4.5rem",
   boxSizing: "border-box",
-};
-
-const buttonStyle: CSSProperties = {
-  background: "#333",
-  border: "none",
-  padding: ".6rem",
-  margin: "0.25rem",
-  borderRadius: "3px",
-  outline: "none",
-  color: "#fff",
 };
 
 export default ChatInput;

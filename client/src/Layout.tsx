@@ -1,22 +1,27 @@
+import { Box } from "@mui/material";
+import { useState } from "react";
 import { Outlet } from "react-router-dom";
-import ListOfRooms from "./ListOfRooms";
+import Header from "./Header";
 import { ContextType, useSocket } from "./SocketContext";
 
 const Layout = () => {
   const { loggedIn } = useSocket() as ContextType;
+  const [menuIsOpen, setMenuIsOpen] = useState(false);
 
   // Different layout depending on logged in our not
-  return (
-    <div>
-      {loggedIn ? (
-        <div style={{ display: "flex" }}>
-          <ListOfRooms />
-          <Outlet />
-        </div>
-      ) : (
-        <Outlet />
-      )}
-    </div>
+  return loggedIn ? (
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        marginLeft: menuIsOpen ? "200px" : "0px",
+      }}
+    >
+      <Header setMenuIsOpen={setMenuIsOpen} />
+      <Outlet />
+    </Box>
+  ) : (
+    <Outlet />
   );
 };
 
