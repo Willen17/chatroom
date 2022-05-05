@@ -5,8 +5,8 @@ import { ClientToServerEvents, ServerToClientEvents } from "../../types";
 export type ContextType = {
   socket: Socket<ServerToClientEvents, ClientToServerEvents> | undefined;
   rooms: String[];
-  setCurrentRoom: React.Dispatch<React.SetStateAction<String>>;
-  currentRoom: String;
+  setCurrentRoom: React.Dispatch<React.SetStateAction<string>>;
+  currentRoom: string;
   clients: String[];
   noOfClients: Number;
   isTypingBlock: string;
@@ -25,7 +25,7 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
     useState<Socket<ServerToClientEvents, ClientToServerEvents>>();
   const [noOfClients, setNoOfClients] = useState<number>(0);
   const [clients, setClients] = useState<string[]>([]);
-  const [currentRoom, setCurrentRoom] = useState<String>("");
+  const [currentRoom, setCurrentRoom] = useState<string>("");
   const [rooms, setRooms] = useState<String[]>([]);
   const [isTypingBlock, setIsTypingBlock] = useState<string>("");
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
