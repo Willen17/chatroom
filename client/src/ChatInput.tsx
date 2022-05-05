@@ -47,6 +47,11 @@ const ChatInput = () => {
     });
   }, [socket]);
 
+  useEffect(() => {
+    const messageList = document.getElementById("messages");
+    messageList!.innerHTML = "";
+  }, [currentRoom]);
+
   return (
     <div style={{ width: "80vw" }}>
       <div style={{ background: "pink", height: "3rem", textAlign: "end" }}>
