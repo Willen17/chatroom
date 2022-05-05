@@ -90,6 +90,7 @@ const Header = (props: Props) => {
           <Box
             sx={{
               display: "flex",
+              backgroundColor: "#3D405B",
               alignItems: "center",
               padding: 2,
               justifyContent: "flex-end",
