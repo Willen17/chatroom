@@ -38,6 +38,7 @@ const ChatInput = () => {
         display: "flex",
         flexDirection: "column",
         boxSizing: "border-box",
+        zIndex: 99,
       }}
     >
       <Box
