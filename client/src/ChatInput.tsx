@@ -16,6 +16,7 @@ const ChatInput = () => {
   useEffect(() => {
     const msgElement = document.getElementById("messages");
     msgElement!.scrollTo(0, document.body.scrollHeight);
+    socket!.emit("getNoOfClientInRoom", currentRoom); // newly added
   }, [messageList]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {

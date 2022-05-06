@@ -15,6 +15,7 @@ export interface ClientToServerEvents {
   join: (room: string) => void;
   typing: () => void;
   leave: (room: string) => void;
+  getNoOfClientInRoom: (room: string) => void;
 }
 
 export interface InterServerEvents {}

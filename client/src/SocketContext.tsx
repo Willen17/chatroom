@@ -9,7 +9,7 @@ export type ContextType = {
   setCurrentRoom: React.Dispatch<React.SetStateAction<string>>;
   currentRoom: string;
   clients: String[];
-  noOfClients: Number;
+  noOfClients: number;
   isTypingBlock: string;
   loggedIn: boolean;
   setLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
@@ -67,6 +67,7 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
 
     // fetch the number of clients in the room
     socket?.on("clientsInRoom", (noOfClients: number) => {
+      console.log("currentRoom: ", currentRoom, "no of clients: ", noOfClients);
       setNoOfClients(noOfClients);
     });
 
