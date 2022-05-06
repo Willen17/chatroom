@@ -6,11 +6,6 @@ import { ContextType, useSocket } from "./SocketContext";
 const ListOfRooms = () => {
   const { rooms, currentRoom, socket, setCurrentRoom } =
     useSocket() as ContextType;
-  const [doesRoomExist, setDoesRoomExist] = useState<boolean>(false);
-
-  useEffect(() => {
-    setDoesRoomExist(true);
-  }, [rooms]);
 
   const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -18,6 +13,7 @@ const ListOfRooms = () => {
     let theRoom = e.currentTarget.innerText;
     if (theRoom) {
       socket!.emit("leave", currentRoom);
+      setCurrentRoom(theRoom);
       socket!.emit("join", theRoom);
       console.log("från under room");
     }
@@ -33,38 +29,34 @@ const ListOfRooms = () => {
       }}
     >
       <ul style={{ paddingLeft: "1rem" }}>
-        {doesRoomExist ? (
-          rooms.map((room, index) => (
-            <li
-              key={index}
-              style={{
-                listStyleType: "none",
-              }}
-            >
-              <Button
-                variant="text"
-                size="small"
-                sx={{
-                  fontFamily: "League Spartan",
-                  letterSpacing: "none",
-                  fontSize: "1rem",
-                  color: "#F2CC8F",
+        {rooms.map((room, index) => (
+          <li
+            key={index}
+            style={{
+              listStyleType: "none",
+            }}
+          >
+            <Button
+              variant="text"
+              size="small"
+              sx={{
+                fontFamily: "League Spartan",
+                letterSpacing: "none",
+                fontSize: "1rem",
+                color: "#F2CC8F",
+                boxShadow: "none",
+                textTransform: "none",
+                "&:hover": {
+                  color: "white",
                   boxShadow: "none",
-                  textTransform: "capitalize",
-                  "&:hover": {
-                    color: "white",
-                    boxShadow: "none",
-                  },
-                }}
-                onClick={handleSubmit}
-              >
-                {room}
-              </Button>
-            </li>
-          ))
-        ) : (
-          <li>There are no rooms</li>
-        )}
+                },
+              }}
+              onClick={handleSubmit}
+            >
+              {room}
+            </Button>
+          </li>
+        ))}
       </ul>
     </Box>
   );
