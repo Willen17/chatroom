@@ -1,17 +1,10 @@
 import { Box, Button } from "@mui/material";
-import { color } from "@mui/system";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { ContextType, useSocket } from "./SocketContext";
 
 const ListOfRooms = () => {
-  const {
-    rooms,
-    currentRoom,
-    socket,
-    setCurrentRoom,
-    clients,
-    testListOfClients,
-  } = useSocket() as ContextType;
+  const { rooms, currentRoom, socket, setCurrentRoom, clients, clientList } =
+    useSocket() as ContextType;
 
   const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -29,9 +22,9 @@ const ListOfRooms = () => {
     rooms.map((room) => {
       socket?.emit("clients", room);
     });
-  }, [socket]);
 
-  console.log(testListOfClients);
+    console.log(clientList);
+  }, [socket]);
 
   return (
     <Box
@@ -72,7 +65,7 @@ const ListOfRooms = () => {
           </li>
         ))}
         <div>
-          {testListOfClients.map((client) => (
+          {clientList.map((client) => (
             <div>
               <p>{client.room}</p>
               <p>{client.clients}</p>
