@@ -8,6 +8,7 @@ export interface ServerToClientEvents {
   clientsInRoom: (noOfClients: number) => void;
   isTypingIndicator: (nickname: string) => void;
   left: (room: string) => void;
+  clients: (room: string, listOfClients: string[]) => void;
 }
 
 export interface ClientToServerEvents {
@@ -15,6 +16,7 @@ export interface ClientToServerEvents {
   join: (room: string) => void;
   typing: () => void;
   leave: (room: string) => void;
+  clients: (room: string) => void;
 }
 
 export interface InterServerEvents {}

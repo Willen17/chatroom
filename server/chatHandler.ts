@@ -37,6 +37,15 @@ export default (io: Server, socket: Socket) => {
     });
   });
 
+  socket.on("clients", async (room) => {
+    let clients: string[] = [];
+    (await io.in(room).fetchSockets()).map((item) =>
+      clients.push(item.data.nickname)
+    );
+    console.log(clients);
+    io.emit("clients", room, clients);
+  });
+
   socket.on("leave", (room) => {
     socket.leave(room);
     // io.emit("roomList", getRooms(io));

@@ -4,8 +4,14 @@ import { useEffect, useState } from "react";
 import { ContextType, useSocket } from "./SocketContext";
 
 const ListOfRooms = () => {
-  const { rooms, currentRoom, socket, setCurrentRoom } =
-    useSocket() as ContextType;
+  const {
+    rooms,
+    currentRoom,
+    socket,
+    setCurrentRoom,
+    clients,
+    testListOfClients,
+  } = useSocket() as ContextType;
 
   const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -18,6 +24,14 @@ const ListOfRooms = () => {
       console.log("från under room");
     }
   };
+
+  useEffect(() => {
+    rooms.map((room) => {
+      socket?.emit("clients", room);
+    });
+  }, [socket]);
+
+  console.log(testListOfClients);
 
   return (
     <Box
@@ -57,6 +71,14 @@ const ListOfRooms = () => {
             </Button>
           </li>
         ))}
+        <div>
+          {testListOfClients.map((client) => (
+            <div>
+              <p>{client.room}</p>
+              <p>{client.clients}</p>
+            </div>
+          ))}
+        </div>
       </ul>
     </Box>
   );

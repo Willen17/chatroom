@@ -1,3 +1,4 @@
+import { on } from "events";
 import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { io, Socket } from "socket.io-client";
@@ -5,7 +6,7 @@ import { ClientToServerEvents, ServerToClientEvents } from "../../types";
 
 export type ContextType = {
   socket: Socket<ServerToClientEvents, ClientToServerEvents> | undefined;
-  rooms: String[];
+  rooms: string[];
   setCurrentRoom: React.Dispatch<React.SetStateAction<string>>;
   currentRoom: string;
   clients: String[];
@@ -15,11 +16,17 @@ export type ContextType = {
   setLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
   leaveRoom: () => void;
   messageList: MessageType[];
+  testListOfClients: ClientListType[];
 };
 
 interface MessageType {
   message: string;
   from: string;
+}
+
+interface ClientListType {
+  room: string;
+  clients: string[];
 }
 
 export const SocketContext = createContext<ContextType | null>(null);
@@ -34,10 +41,13 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
   const [noOfClients, setNoOfClients] = useState<number>(0);
   const [clients, setClients] = useState<string[]>([]);
   const [currentRoom, setCurrentRoom] = useState<string>("");
-  const [rooms, setRooms] = useState<String[]>([]);
+  const [rooms, setRooms] = useState<string[]>([]);
   const [isTypingBlock, setIsTypingBlock] = useState<string>("");
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
   const [messageList, setMessageList] = useState<MessageType[]>([]);
+  const [testListOfClients, setTestListOfClients] = useState<ClientListType[]>(
+    []
+  );
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -63,6 +73,25 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
         from: from.nickname,
       };
       setMessageList((messagesList) => [...messagesList, messageObject]);
+    });
+
+    socket?.on("clients", (room: string, listOfClients: string[]) => {
+      let clientObject: ClientListType = {
+        room: room,
+        clients: listOfClients,
+      };
+
+      let newArray: ClientListType[] = [];
+
+      const updatedQuantity = testListOfClients.map((item) => {
+        if (item.room === clientObject.room) {
+          newArray.push(clientObject);
+        } else {
+          newArray.push(item);
+        }
+      });
+
+      setTestListOfClients(newArray);
     });
 
     // fetch the number of clients in the room
@@ -112,6 +141,7 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
         setLoggedIn,
         leaveRoom,
         messageList,
+        testListOfClients,
       }}
     >
       {children}
