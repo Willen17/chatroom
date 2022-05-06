@@ -81,18 +81,30 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
         clients: listOfClients,
       };
 
-      let newArray: ClientListType[] = [];
-
-      const updatedQuantity = testListOfClients.map((item) => {
-        if (item.room === clientObject.room) {
-          newArray.push(clientObject);
-        } else {
-          newArray.push(item);
-        }
-      });
-
-      setTestListOfClients(newArray);
+      if (testListOfClients.some((item) => item.room === clientObject.room)) {
+        const updatedList = testListOfClients.map((item) => {
+          testListOfClients.filter((item) => item.clients.length !== 0);
+          return { ...item, clients: clientObject.clients };
+        });
+        setTestListOfClients(updatedList);
+      } else {
+        setTestListOfClients((testListOfClients) => [
+          ...testListOfClients,
+          clientObject,
+        ]);
+      }
     });
+
+    //   let newArray: ClientListType[] = [];
+    //   const updatedQuantity = testListOfClients.map((item) => {
+    //     if (item.room === clientObject.room) {
+    //       newArray.push(clientObject);
+    //     } else {
+    //       newArray.push(item);
+    //     }
+    //   });
+    //   setTestListOfClients(newArray);
+    // });
 
     // fetch the number of clients in the room
     socket?.on("clientsInRoom", (noOfClients: number) => {
