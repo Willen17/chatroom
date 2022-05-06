@@ -7,9 +7,9 @@ const Footer = () => {
         display: "flex",
         flexDirection: "row",
         justifyContent: "space-between",
-        m: "-2rem auto -2rem auto",
+        m: "-1.4rem auto 0 auto",
         color: "#F4F1DE",
-        zIndex: 2,
+        zIndex: 1,
       }}
     >
       <Box

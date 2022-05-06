@@ -3,30 +3,49 @@ import { useNavigate } from "react-router-dom";
 import { io, Socket } from "socket.io-client";
 import { ClientToServerEvents, ServerToClientEvents } from "../../types";
 
-export type ContextType = {
+interface ContextType {
   socket: Socket<ServerToClientEvents, ClientToServerEvents> | undefined;
-  rooms: String[];
+  rooms: string[];
   setCurrentRoom: React.Dispatch<React.SetStateAction<string>>;
   currentRoom: string;
   clients: String[];
-  noOfClients: Number;
+  noOfClients: number;
   isTypingBlock: string;
   loggedIn: boolean;
   setLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
   leaveRoom: () => void;
   messageList: MessageType[];
-};
+  clientList: ClientListType[];
+}
 
 interface MessageType {
   message: string;
   from: string;
 }
 
-export const SocketContext = createContext<ContextType | null>(null);
+export interface ClientListType {
+  room: string;
+  clients: string[];
+}
 
 type Props = {
   children: React.ReactNode;
 };
+
+export const SocketContext = createContext<ContextType>({
+  socket: undefined,
+  rooms: [],
+  setCurrentRoom: () => {},
+  currentRoom: "",
+  clients: [],
+  noOfClients: 0,
+  isTypingBlock: "",
+  loggedIn: false,
+  setLoggedIn: () => {},
+  leaveRoom: () => {},
+  messageList: [],
+  clientList: [],
+});
 
 const SocketProvider: React.FC<Props> = ({ children }) => {
   const [socket, setSocket] =
@@ -34,10 +53,11 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
   const [noOfClients, setNoOfClients] = useState<number>(0);
   const [clients, setClients] = useState<string[]>([]);
   const [currentRoom, setCurrentRoom] = useState<string>("");
-  const [rooms, setRooms] = useState<String[]>([]);
+  const [rooms, setRooms] = useState<string[]>([]);
   const [isTypingBlock, setIsTypingBlock] = useState<string>("");
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
   const [messageList, setMessageList] = useState<MessageType[]>([]);
+  const [clientList, setClientList] = useState<ClientListType[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -65,8 +85,36 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
       setMessageList((messagesList) => [...messagesList, messageObject]);
     });
 
+    socket?.on("clients", (room: string, listOfClients: string[]) => {
+      let clientObject: ClientListType = {
+        room: room,
+        clients: listOfClients,
+      };
+
+      // filter out empty room
+      const removeDup = (list: ClientListType[]) => {
+        const clientListToAdd = [...list, clientObject];
+        const filter: ClientListType[] = clientListToAdd.filter(
+          (item) => item.clients.length > 0
+        );
+        setClientList(filter);
+      };
+
+      // if the room name matches
+      if (clientList.some((item) => item.room === clientObject.room)) {
+        // filter out room with duplicated name
+        const filter: ClientListType[] = clientList.filter(
+          (item) => item.room !== clientObject.room
+        );
+        removeDup(filter);
+      } else {
+        removeDup(clientList);
+      }
+    });
+
     // fetch the number of clients in the room
     socket?.on("clientsInRoom", (noOfClients: number) => {
+      console.log("currentRoom: ", currentRoom, "no of clients: ", noOfClients);
       setNoOfClients(noOfClients);
     });
 
@@ -88,15 +136,15 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
       console.log("Left room: ", room);
       navigate("/room");
     });
-  }, [socket]);
+  }, [socket, clientList]);
 
   // leave a chatroom and be redirected to roomInput
   const leaveRoom = () => {
     socket!.emit("leave", currentRoom);
   };
 
-  console.log("no. of clients in room: ", noOfClients);
-  console.log(clients);
+  // console.log("no. of clients in room: ", noOfClients);
+  // console.log(clients);
 
   return (
     <SocketContext.Provider
@@ -112,6 +160,7 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
         setLoggedIn,
         leaveRoom,
         messageList,
+        clientList,
       }}
     >
       {children}

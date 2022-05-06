@@ -11,8 +11,9 @@ export default (io: Server, socket: Socket) => {
     }
 
     // show number of users in the room
-    const numClients = io.sockets.adapter.rooms.get(room)?.size;
-    io.emit("clientsInRoom", numClients);
+    // const numClients = io.sockets.adapter.rooms.get(room)?.size;
+    // io.emit("clientsInRoom", numClients);
+    // console.log(room + ":  " + numClients);
 
     // show a list of the clients in the room
     let roomUsers: string[] = [];
@@ -35,6 +36,15 @@ export default (io: Server, socket: Socket) => {
       id: socket.id,
       nickname: socket.data.nickname,
     });
+  });
+
+  socket.on("clients", async (room) => {
+    let clients: string[] = [];
+    (await io.in(room).fetchSockets()).map((item) =>
+      clients.push(item.data.nickname)
+    );
+    console.log(clients);
+    io.emit("clients", room, clients);
   });
 
   socket.on("leave", (room) => {

@@ -2,11 +2,10 @@ import { Logout, Send } from "@mui/icons-material";
 import { Box, Button, Typography } from "@mui/material";
 import { CSSProperties, useEffect, useState } from "react";
 import IsTypingBlock from "./components/IsTypingBlock";
-import { ContextType, useSocket } from "./SocketContext";
+import { useSocket } from "./SocketContext";
 
 const ChatInput = () => {
-  const { socket, currentRoom, leaveRoom, messageList } =
-    useSocket() as ContextType;
+  const { socket, currentRoom, leaveRoom, messageList } = useSocket();
   const [chatMessage, setChatMessage] = useState<string>("");
 
   const updateChatMessage = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -59,7 +58,7 @@ const ChatInput = () => {
             width: 1,
             textAlign: "center",
             ml: "4rem",
-            textTransform: "capitalize",
+            textTransform: "none",
           }}
         >
           {currentRoom}

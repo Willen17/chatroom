@@ -1,8 +1,8 @@
 import { CSSProperties } from "react";
-import { ContextType, useSocket } from "../SocketContext";
+import { useSocket } from "../SocketContext";
 
 const IsTypingBlock = () => {
-  const { isTypingBlock } = useSocket() as ContextType;
+  const { isTypingBlock } = useSocket();
 
   return <div style={rootStyle}>{isTypingBlock}</div>;
 };

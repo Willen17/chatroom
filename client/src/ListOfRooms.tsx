@@ -1,11 +1,10 @@
-import { Box, Button } from "@mui/material";
-import { color } from "@mui/system";
-import { useEffect, useState } from "react";
-import { ContextType, useSocket } from "./SocketContext";
+import { Box, Button, Typography } from "@mui/material";
+import { useEffect } from "react";
+import { useSocket } from "./SocketContext";
 
 const ListOfRooms = () => {
-  const { rooms, currentRoom, socket, setCurrentRoom } =
-    useSocket() as ContextType;
+  const { rooms, currentRoom, socket, setCurrentRoom, clientList } =
+    useSocket();
 
   const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -19,6 +18,11 @@ const ListOfRooms = () => {
     }
   };
 
+  useEffect(() => {
+    rooms.map((room) => socket?.emit("clients", room));
+  }, [socket]);
+
+  console.log(clientList);
   return (
     <Box
       sx={{
@@ -29,32 +33,31 @@ const ListOfRooms = () => {
       }}
     >
       <ul style={{ paddingLeft: "1rem" }}>
-        {rooms.map((room, index) => (
+        {clientList.map((room, index) => (
           <li
             key={index}
             style={{
               listStyleType: "none",
             }}
           >
-            <Button
-              variant="text"
-              size="small"
-              sx={{
-                fontFamily: "League Spartan",
-                letterSpacing: "none",
-                fontSize: "1rem",
-                color: "#F2CC8F",
-                boxShadow: "none",
-                textTransform: "none",
-                "&:hover": {
-                  color: "white",
+            <Box>
+              <Button
+                variant="text"
+                size="small"
+                sx={{
+                  fontFamily: "League Spartan",
+                  letterSpacing: "none",
+                  textTransform: "none",
+                  fontSize: "1rem",
+                  color: "#F2CC8F",
                   boxShadow: "none",
-                },
-              }}
-              onClick={handleSubmit}
-            >
-              {room}
-            </Button>
+                }}
+                onClick={handleSubmit}
+              >
+                {room.room}
+              </Button>
+              <Typography variant="body2">{room.clients}</Typography>
+            </Box>
           </li>
         ))}
       </ul>

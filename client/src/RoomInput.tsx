@@ -10,10 +10,10 @@ import {
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import backgroundIMG from "./assets/background-room.png";
-import { ContextType, useSocket } from "./SocketContext";
+import { useSocket } from "./SocketContext";
 
 const RoomInput = () => {
-  const { socket, setCurrentRoom } = useSocket() as ContextType;
+  const { socket, setCurrentRoom } = useSocket();
   const [roomName, setRoomName] = useState<string>("");
   const navigate = useNavigate();
   const matches = useMediaQuery("(max-width:650px)");
@@ -45,6 +45,7 @@ const RoomInput = () => {
       sx={{
         backgroundImage: `url(${backgroundIMG})`,
         height: "calc(100vh - 4.5rem)",
+        minHeight: "500px",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
         backgroundSize: "cover",
@@ -264,18 +265,3 @@ const formStyling = {
 };
 
 export default RoomInput;
-
-/*
-   <div className="inputNameContainer">
-      <h3>Enter your room</h3>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          value={roomName}
-          onChange={updateRoomName}
-          placeholder="Enter a room"
-        />
-        <button type="submit">Join</button>
-      </form>
-    </div>
-    */

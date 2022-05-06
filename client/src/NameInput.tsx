@@ -1,3 +1,4 @@
+import { AccountCircle } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -8,13 +9,12 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ContextType, useSocket } from "./SocketContext";
 import backgroundIMG from "./assets/background.png";
 import { ReactComponent as BirdLogo } from "./assets/bird.svg";
-import { AccountCircle } from "@mui/icons-material";
+import { useSocket } from "./SocketContext";
 
 const NameInput = () => {
-  const { socket, setLoggedIn } = useSocket() as ContextType;
+  const { socket, setLoggedIn } = useSocket();
   const [userName, setUserName] = useState<string>("");
   const matches = useMediaQuery("(max-width:650px)");
   const matches2 = useMediaQuery("(max-width:455px)");
@@ -56,7 +56,7 @@ const NameInput = () => {
       sx={{
         backgroundImage: `url(${backgroundIMG})`,
         height: "100vh",
-
+        minHeight: "500px",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
         backgroundSize: "cover",
