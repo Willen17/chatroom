@@ -45,6 +45,7 @@ const RoomInput = () => {
       sx={{
         backgroundImage: `url(${backgroundIMG})`,
         height: "calc(100vh - 4.5rem)",
+        minHeight: "500px",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
         backgroundSize: "cover",

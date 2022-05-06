@@ -56,7 +56,7 @@ const NameInput = () => {
       sx={{
         backgroundImage: `url(${backgroundIMG})`,
         height: "100vh",
-
+        minHeight: "500px",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
         backgroundSize: "cover",
