@@ -58,7 +58,7 @@ const ChatInput = () => {
             width: 1,
             textAlign: "center",
             ml: "4rem",
-            textTransform: "capitalize",
+            textTransform: "none",
           }}
         >
           {currentRoom}

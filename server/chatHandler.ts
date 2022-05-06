@@ -11,8 +11,9 @@ export default (io: Server, socket: Socket) => {
     }
 
     // show number of users in the room
-    const numClients = io.sockets.adapter.rooms.get(room)?.size;
-    io.emit("clientsInRoom", numClients);
+    // const numClients = io.sockets.adapter.rooms.get(room)?.size;
+    // io.emit("clientsInRoom", numClients);
+    // console.log(room + ":  " + numClients);
 
     // show a list of the clients in the room
     let roomUsers: string[] = [];

@@ -114,6 +114,7 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
 
     // fetch the number of clients in the room
     socket?.on("clientsInRoom", (noOfClients: number) => {
+      console.log("currentRoom: ", currentRoom, "no of clients: ", noOfClients);
       setNoOfClients(noOfClients);
     });
 

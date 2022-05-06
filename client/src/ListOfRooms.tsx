@@ -40,26 +40,24 @@ const ListOfRooms = () => {
               listStyleType: "none",
             }}
           >
-            <Button
-              variant="text"
-              size="small"
-              sx={{
-                fontFamily: "League Spartan",
-                letterSpacing: "none",
-                fontSize: "1rem",
-                color: "#F2CC8F",
-                boxShadow: "none",
-                textTransform: "none",
-                "&:hover": {
-                  color: "white",
+            <Box>
+              <Button
+                variant="text"
+                size="small"
+                sx={{
+                  fontFamily: "League Spartan",
+                  letterSpacing: "none",
+                  textTransform: "none",
+                  fontSize: "1rem",
+                  color: "#F2CC8F",
                   boxShadow: "none",
-                },
-              }}
-              onClick={handleSubmit}
-            >
-              {room.room}
-            </Button>
-            <Typography variant="body2">{room.clients}</Typography>
+                }}
+                onClick={handleSubmit}
+              >
+                {room.room}
+              </Button>
+              <Typography variant="body2">{room.clients}</Typography>
+            </Box>
           </li>
         ))}
       </ul>
