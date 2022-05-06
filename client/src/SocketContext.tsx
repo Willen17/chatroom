@@ -51,7 +51,7 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
   useEffect(() => {
     // to list all rooms, put in a use effect
     socket?.on("roomList", (listofRooms) => {
-      console.log(rooms);
+      console.log(listofRooms);
 
       setRooms(listofRooms);
     });
