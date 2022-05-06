@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ContextType, useSocket } from "./SocketContext";
+import { useSocket } from "./SocketContext";
 
 const RoomInput = () => {
-  const { socket, setCurrentRoom } = useSocket() as ContextType;
+  const { socket, setCurrentRoom } = useSocket();
   const [roomName, setRoomName] = useState<string>("");
   const navigate = useNavigate();
 

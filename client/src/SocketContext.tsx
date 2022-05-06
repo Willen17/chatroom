@@ -3,36 +3,49 @@ import { useNavigate } from "react-router-dom";
 import { io, Socket } from "socket.io-client";
 import { ClientToServerEvents, ServerToClientEvents } from "../../types";
 
-export type ContextType = {
+interface ContextType {
   socket: Socket<ServerToClientEvents, ClientToServerEvents> | undefined;
   rooms: string[];
   setCurrentRoom: React.Dispatch<React.SetStateAction<string>>;
   currentRoom: string;
   clients: String[];
-  noOfClients: Number;
+  noOfClients: number;
   isTypingBlock: string;
   loggedIn: boolean;
   setLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
   leaveRoom: () => void;
   messageList: MessageType[];
   clientList: ClientListType[];
-};
+}
 
 interface MessageType {
   message: string;
   from: string;
 }
 
-interface ClientListType {
+export interface ClientListType {
   room: string;
   clients: string[];
 }
 
-export const SocketContext = createContext<ContextType | null>(null);
-
 type Props = {
   children: React.ReactNode;
 };
+
+export const SocketContext = createContext<ContextType>({
+  socket: undefined,
+  rooms: [],
+  setCurrentRoom: () => {},
+  currentRoom: "",
+  clients: [],
+  noOfClients: 0,
+  isTypingBlock: "",
+  loggedIn: false,
+  setLoggedIn: () => {},
+  leaveRoom: () => {},
+  messageList: [],
+  clientList: [],
+});
 
 const SocketProvider: React.FC<Props> = ({ children }) => {
   const [socket, setSocket] =
@@ -44,7 +57,7 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
   const [isTypingBlock, setIsTypingBlock] = useState<string>("");
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
   const [messageList, setMessageList] = useState<MessageType[]>([]);
-  const [clientList, setTestListOfClients] = useState<ClientListType[]>([]);
+  const [clientList, setClientList] = useState<ClientListType[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -79,18 +92,23 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
       };
 
       // filter out empty room
-      const listWithNoEmptyRoom: ClientListType[] = clientList.filter(
-        (item) => item.clients.length > 0
-      );
+      const removeDup = (list: ClientListType[]) => {
+        const clientListToAdd = [...list, clientObject];
+        const filter: ClientListType[] = clientListToAdd.filter(
+          (item) => item.clients.length > 0
+        );
+        setClientList(filter);
+      };
 
       // if the room name matches
-      if (listWithNoEmptyRoom.some((item) => item.room === clientObject.room)) {
+      if (clientList.some((item) => item.room === clientObject.room)) {
         // filter out room with duplicated name
-        const newListWithNoDupName: ClientListType[] =
-          listWithNoEmptyRoom.filter((item) => item.room !== clientObject.room);
-        setTestListOfClients([...newListWithNoDupName, clientObject]);
+        const filter: ClientListType[] = clientList.filter(
+          (item) => item.room !== clientObject.room
+        );
+        removeDup(filter);
       } else {
-        setTestListOfClients([...listWithNoEmptyRoom, clientObject]);
+        removeDup(clientList);
       }
     });
 
@@ -124,7 +142,7 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
     socket!.emit("leave", currentRoom);
   };
 
-  console.log("no. of clients in room: ", noOfClients);
+  // console.log("no. of clients in room: ", noOfClients);
   // console.log(clients);
 
   return (
