@@ -18,9 +18,9 @@ const ListOfRooms = () => {
     }
   };
 
-  useEffect(() => {
-    rooms.map((room) => socket?.emit("clients", room));
-  }, [socket]);
+  // useEffect(() => {
+  //   rooms.map((room) => socket?.emit("clients", room));
+  // }, [socket]);
 
   console.log(clientList);
   return (
@@ -33,7 +33,7 @@ const ListOfRooms = () => {
       }}
     >
       <ul style={{ paddingLeft: "1rem" }}>
-        {clientList.map((room, index) => (
+        {rooms.map((room, index) => (
           <li
             key={index}
             style={{
@@ -54,9 +54,15 @@ const ListOfRooms = () => {
                 }}
                 onClick={handleSubmit}
               >
-                {room.room}
+                {room.name}
               </Button>
-              <Typography variant="body2">{room.clients}</Typography>
+              <div>
+                {room.sockets.map((user, index) => (
+                  <Typography key={index} variant="body2">
+                    {user.nickname}
+                  </Typography>
+                ))}
+              </div>
             </Box>
           </li>
         ))}
