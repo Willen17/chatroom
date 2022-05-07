@@ -1,11 +1,15 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { io, Socket } from "socket.io-client";
-import { ClientToServerEvents, ServerToClientEvents } from "../../types";
+import {
+  ChatRoom,
+  ClientToServerEvents,
+  ServerToClientEvents,
+} from "../../types";
 
 interface ContextType {
   socket: Socket<ServerToClientEvents, ClientToServerEvents> | undefined;
-  rooms: string[];
+  rooms: ChatRoom[];
   setCurrentRoom: React.Dispatch<React.SetStateAction<string>>;
   currentRoom: string;
   clients: String[];
@@ -53,7 +57,7 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
   const [noOfClients, setNoOfClients] = useState<number>(0);
   const [clients, setClients] = useState<string[]>([]);
   const [currentRoom, setCurrentRoom] = useState<string>("");
-  const [rooms, setRooms] = useState<string[]>([]);
+  const [rooms, setRooms] = useState<ChatRoom[]>([]);
   const [isTypingBlock, setIsTypingBlock] = useState<string>("");
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
   const [messageList, setMessageList] = useState<MessageType[]>([]);
@@ -69,15 +73,17 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
   }, []);
 
   useEffect(() => {
+    if (!socket) return;
+
     // to list all rooms, put in a use effect
-    socket?.on("roomList", (listofRooms) => {
+    socket.on("roomList", (listofRooms) => {
       console.log(listofRooms);
 
       setRooms(listofRooms);
     });
 
     // receive the new message and update in the state
-    socket?.on("message", (message, from) => {
+    socket.on("message", (message, from) => {
       let messageObject: MessageType = {
         message: message,
         from: from.nickname,
@@ -85,7 +91,7 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
       setMessageList((messagesList) => [...messagesList, messageObject]);
     });
 
-    socket?.on("clients", (room: string, listOfClients: string[]) => {
+    socket.on("clients", (room: string, listOfClients: string[]) => {
       let clientObject: ClientListType = {
         room: room,
         clients: listOfClients,
@@ -113,18 +119,18 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
     });
 
     // fetch the number of clients in the room
-    socket?.on("clientsInRoom", (noOfClients: number) => {
+    socket.on("clientsInRoom", (noOfClients: number) => {
       console.log("currentRoom: ", currentRoom, "no of clients: ", noOfClients);
       setNoOfClients(noOfClients);
     });
 
     // fetch the list of clients' nickname in the room
-    socket?.on("ListOfClientsInRoom", (clients: string[]) => {
+    socket.on("ListOfClientsInRoom", (clients: string[]) => {
       setClients(clients);
     });
 
     // fetch the typing status of user
-    socket?.on("isTypingIndicator", (nickname: string) => {
+    socket.on("isTypingIndicator", (nickname: string) => {
       if (nickname) {
         setIsTypingBlock(`${nickname} is typing...`);
         setTimeout(() => setIsTypingBlock(""), 2000);
@@ -132,11 +138,11 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
     });
 
     // set leave room of user
-    socket?.on("left", (room) => {
+    socket.on("left", (room) => {
       console.log("Left room: ", room);
       navigate("/room");
     });
-  }, [socket, clientList]);
+  }, [socket]);
 
   // leave a chatroom and be redirected to roomInput
   const leaveRoom = () => {
