@@ -3,12 +3,14 @@ import { getRooms } from "./roomStore";
 
 export default (io: Server, socket: Socket) => {
   socket.on("join", async (room: string) => {
-    const shouldBroadcastRooms: boolean = !getRooms(io).includes(room); //Om det ya rummet inte finns med i listan getRooms, då blir det true och skapar ett nytt rum
+    // const shouldBroadcastRooms: boolean = !getRooms(io).includes(room); //Om det ya rummet inte finns med i listan getRooms, då blir det true och skapar ett nytt rum
 
     socket.join(room);
-    if (shouldBroadcastRooms) {
+    if (!getRooms(io).some((e) => e.name == room)) {
       io.emit("roomList", getRooms(io));
+      console.log(getRooms(io));
     }
+    io.emit("roomList", getRooms(io));
 
     // show number of users in the room
     // const numClients = io.sockets.adapter.rooms.get(room)?.size;
@@ -52,5 +54,6 @@ export default (io: Server, socket: Socket) => {
     // io.emit("roomList", getRooms(io));
     console.log("user left the room");
     socket.emit("left", room);
+    io.emit("roomList", getRooms(io));
   });
 };
