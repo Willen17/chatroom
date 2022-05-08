@@ -61,6 +61,13 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
   useEffect(() => {
     if (!socket) return;
 
+    //If the connection is succeded then this part runs
+    socket?.on("connected", (nickname) => {
+      console.log("Connected: ", nickname);
+      setLoggedIn(true);
+      navigate("/room");
+    });
+
     // to list all rooms, put in a use effect
     socket.on("roomList", (listofRooms) => {
       console.log(listofRooms);
