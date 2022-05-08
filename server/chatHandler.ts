@@ -26,8 +26,8 @@ export default (io: Server, socket: Socket) => {
     socket.emit("joined", room);
   });
 
-  socket.on("typing", () =>
-    socket.broadcast.emit("isTypingIndicator", socket.data.nickname)
+  socket.on("typing", (room) =>
+    socket.broadcast.to(room).emit("isTypingIndicator", socket.data.nickname)
   );
 
   socket.on("message", (message, to) => {

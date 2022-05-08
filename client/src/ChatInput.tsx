@@ -128,7 +128,7 @@ const ChatInput = () => {
             value={chatMessage}
             onChange={updateChatMessage}
             onKeyDown={() => {
-              socket?.emit("typing");
+              socket?.emit("typing", currentRoom);
             }}
             id="input"
             style={{
@@ -176,7 +176,7 @@ const blockAndFormDivStyle: CSSProperties = {
   right: 0,
   display: "flex",
   flexDirection: "column",
-  height: "4.5rem",
+  height: "5rem",
   boxSizing: "border-box",
 };
 

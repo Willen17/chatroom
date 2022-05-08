@@ -6,7 +6,7 @@ export interface ServerToClientEvents {
   _error: (errorMessage: string) => void;
   ListOfClientsInRoom: (clients: string[]) => void;
   clientsInRoom: (noOfClients: number) => void;
-  isTypingIndicator: (nickname: string) => void;
+  isTypingIndicator: (nickname: string, room: string) => void;
   left: (room: string) => void;
   clients: (room: string, listOfClients: string[]) => void;
 }
@@ -14,7 +14,7 @@ export interface ServerToClientEvents {
 export interface ClientToServerEvents {
   message: (message: string, to: string) => void;
   join: (room: string) => void;
-  typing: () => void;
+  typing: (room: string) => void;
   leave: (room: string) => void;
   clients: (room: string) => void;
 }
