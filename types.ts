@@ -4,11 +4,8 @@ export interface ServerToClientEvents {
   roomList: (rooms: ChatRoom[]) => void;
   joined: (room: string) => void;
   _error: (errorMessage: string) => void;
-  ListOfClientsInRoom: (clients: string[]) => void;
-  clientsInRoom: (noOfClients: number) => void;
   isTypingIndicator: (nickname: string, room: string) => void;
   left: (room: string) => void;
-  clients: (room: string, listOfClients: string[]) => void;
 }
 
 export interface ClientToServerEvents {
@@ -16,7 +13,6 @@ export interface ClientToServerEvents {
   join: (room: string) => void;
   typing: (room: string) => void;
   leave: (room: string) => void;
-  clients: (room: string) => void;
 }
 
 export interface InterServerEvents {}

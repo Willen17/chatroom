@@ -12,17 +12,12 @@ export default (io: Server, socket: Socket) => {
     }
     io.emit("roomList", getRooms(io));
 
-    // show number of users in the room
-    // const numClients = io.sockets.adapter.rooms.get(room)?.size;
-    // io.emit("clientsInRoom", numClients);
-    // console.log(room + ":  " + numClients);
-
     // show a list of the clients in the room
     let roomUsers: string[] = [];
     (await io.in(room).fetchSockets()).map((item) =>
       roomUsers.push(item.data.nickname)
     );
-    io.emit("ListOfClientsInRoom", roomUsers);
+    // io.emit("ListOfClientsInRoom", roomUsers);
     socket.emit("joined", room);
   });
 
@@ -38,15 +33,6 @@ export default (io: Server, socket: Socket) => {
       id: socket.id,
       nickname: socket.data.nickname,
     });
-  });
-
-  socket.on("clients", async (room) => {
-    let clients: string[] = [];
-    (await io.in(room).fetchSockets()).map((item) =>
-      clients.push(item.data.nickname)
-    );
-    console.log(clients);
-    io.emit("clients", room, clients);
   });
 
   socket.on("leave", (room) => {
