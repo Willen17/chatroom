@@ -3,15 +3,11 @@ import React, { useState } from "react";
 import { useSocket } from "./SocketContext";
 
 const ListOfRooms = () => {
-  const { rooms, currentRoom, socket, setCurrentRoom, clientList } =
-    useSocket();
+  const { rooms, currentRoom, socket, setCurrentRoom } = useSocket();
   const [checked, setChecked] = useState(false);
-  // const [target, setTarget] = useState("");
-  const [expandedId, setExpandedId] = useState(-1);
 
   const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    console.log(e.currentTarget.innerText);
     let theRoom = e.currentTarget.innerText;
     if (theRoom) {
       socket!.emit("leave", currentRoom);
@@ -21,28 +17,10 @@ const ListOfRooms = () => {
     }
   };
 
-  const handleExpandClick = (i: number) => {
-    console.log("index: ", i);
-    setExpandedId(expandedId === i ? -1 : i);
-    console.log("expandedID: ", expandedId);
-  };
-
-  // const clickedRoom = (e: React.MouseEvent<HTMLButtonElement>) => {
-  //   const target1 = e.currentTarget.parentElement?.firstChild?.textContent;
-  //   setTarget(target1 || "");
-  //   console.log("target:", target);
-  //   showClients(e);
-  // };
-
   const showClients = (e: React.MouseEvent<HTMLButtonElement>) => {
     checked ? setChecked(false) : setChecked(true);
   };
 
-  // useEffect(() => {
-  //   rooms.map((room) => socket?.emit("clients", room));
-  // }, [socket]);
-
-  console.log(clientList);
   return (
     <Box
       sx={{
@@ -102,7 +80,6 @@ const ListOfRooms = () => {
                 {room.sockets.map((user, index) => (
                   <Grow
                     key={index}
-                    // orientation="horizontal"
                     in={checked}
                     {...(checked ? { timeout: 500 } : { timeout: 0 })}
                   >
