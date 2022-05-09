@@ -1,11 +1,12 @@
 export interface ServerToClientEvents {
   message: (message: string, from: { id: string; nickname: string }) => void;
-  connected: (nickname: string) => void;
+  connected: (user: Users) => void;
   roomList: (rooms: ChatRoom[]) => void;
   joined: (room: string) => void;
   _error: (errorMessage: string) => void;
   isTypingIndicator: (nickname: string, room: string) => void;
   left: (room: string) => void;
+  users: (users: Users[]) => void;
 }
 
 export interface ClientToServerEvents {
@@ -19,6 +20,11 @@ export interface InterServerEvents {}
 
 export interface ServerSocketData {
   nickname: string;
+}
+
+export interface Users {
+  userID: string;
+  username: string;
 }
 
 export interface ChatRoom {
