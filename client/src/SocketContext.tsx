@@ -21,6 +21,7 @@ interface ContextType {
   messageList: MessageType[];
   currentUser: Users;
   allConnectedUsers: Users[];
+  handleOpenDM: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 interface MessageType {
@@ -45,6 +46,7 @@ export const SocketContext = createContext<ContextType>({
   messageList: [],
   currentUser: { userID: "", username: "" },
   allConnectedUsers: [],
+  handleOpenDM: () => {},
 });
 
 const SocketProvider: React.FC<Props> = ({ children }) => {
@@ -130,6 +132,14 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
     socket!.emit("leave", currentRoom);
   };
 
+  const handleOpenDM = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    let selectedUser = e.currentTarget.innerText;
+    console.log(selectedUser);
+
+    socket.emit("getUserID", selectedUser);
+  };
+
   console.log(allConnectedUsers);
   console.log(currentUser);
 
@@ -148,6 +158,7 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
         messageList,
         currentUser,
         allConnectedUsers,
+        handleOpenDM,
       }}
     >
       {children}

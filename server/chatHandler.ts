@@ -8,7 +8,6 @@ export default (io: Server, socket: Socket) => {
     socket.join(room);
     if (!getRooms(io).some((e) => e.name == room)) {
       io.emit("roomList", getRooms(io));
-      console.log(getRooms(io));
     }
     io.emit("roomList", getRooms(io));
 
