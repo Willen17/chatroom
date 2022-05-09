@@ -5,6 +5,7 @@ import {
   ChatRoom,
   ClientToServerEvents,
   ServerToClientEvents,
+  Users,
 } from "../../types";
 
 interface ContextType {
@@ -18,6 +19,8 @@ interface ContextType {
   setLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
   leaveRoom: () => void;
   messageList: MessageType[];
+  currentUser: Users;
+  allConnectedUsers: Users[];
 }
 
 interface MessageType {
@@ -40,6 +43,8 @@ export const SocketContext = createContext<ContextType>({
   setLoggedIn: () => {},
   leaveRoom: () => {},
   messageList: [],
+  currentUser: { userID: "", username: "" },
+  allConnectedUsers: [],
 });
 
 const SocketProvider: React.FC<Props> = ({ children }) => {
@@ -51,6 +56,11 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
   const [isTypingBlock, setIsTypingBlock] = useState<string>("");
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
   const [messageList, setMessageList] = useState<MessageType[]>([]);
+  const [currentUser, setCurrentUser] = useState<Users>({
+    userID: "",
+    username: "",
+  });
+  const [allConnectedUsers, setAllConnectedUsers] = useState<Users[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -65,10 +75,20 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
     if (!socket) return;
 
     //If the connection is succeded then this part runs
-    socket?.on("connected", (nickname) => {
-      setNickname(nickname);
+    socket?.on("connected", (newUser) => {
+      setNickname(newUser.username);
       setLoggedIn(true);
+
       navigate("/room");
+    });
+
+    socket.on("users", (users) => {
+      users.forEach((user) => {
+        if (user.userID === socket.id) {
+          setCurrentUser(user);
+        }
+      });
+      setAllConnectedUsers(users);
     });
 
     // to list all rooms, put in a use effect
@@ -107,6 +127,9 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
     socket!.emit("leave", currentRoom);
   };
 
+  console.log(allConnectedUsers);
+  console.log(currentUser);
+
   return (
     <SocketContext.Provider
       value={{
@@ -120,6 +143,8 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
         setLoggedIn,
         leaveRoom,
         messageList,
+        currentUser,
+        allConnectedUsers,
       }}
     >
       {children}
