@@ -3,7 +3,8 @@ import React, { useState } from "react";
 import { useSocket } from "./SocketContext";
 
 const ListOfRooms = () => {
-  const { rooms, currentRoom, socket, setCurrentRoom } = useSocket();
+  const { rooms, currentRoom, socket, setCurrentRoom, allConnectedUsers } =
+    useSocket();
   const [checked, setChecked] = useState(false);
 
   const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -31,6 +32,13 @@ const ListOfRooms = () => {
       }}
     >
       <ul style={{ paddingLeft: "1rem" }}>
+        <h3>All connected users</h3>
+        <ul>
+          {allConnectedUsers.map((user, index) => (
+            <li key={index}>{user.username}</li>
+          ))}
+        </ul>
+        <h3>All rooms</h3>
         {rooms.map((room, index) => (
           <li
             key={index}
