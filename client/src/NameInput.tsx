@@ -32,13 +32,6 @@ const NameInput = () => {
     }
   };
 
-  //If the connection part fails, this code runs, i.e the nickname is shorter than 3 characters.
-  socket?.on("connect_error", (err) => {
-    if (err.message === "Invalid nickname") {
-      console.log("You have entered an invalid username, try again.");
-    }
-  });
-
   return (
     <Box
       sx={{
