@@ -8,6 +8,7 @@ export interface ServerToClientEvents {
   left: (room: string) => void;
   users: (users: Users[]) => void;
   sendUserID: (userID: string) => void;
+  privateMessage: (content: string, from: string) => void;
 }
 
 export interface ClientToServerEvents {
@@ -16,6 +17,7 @@ export interface ClientToServerEvents {
   typing: (room: string) => void;
   leave: (room: string) => void;
   getUserID: (username: string) => void;
+  privateMessage: (content: string, to: string) => void;
 }
 
 export interface InterServerEvents {}
@@ -27,6 +29,12 @@ export interface ServerSocketData {
 export interface Users {
   userID: string;
   username: string;
+  messages?: DirectMessage[] | undefined;
+}
+
+export interface DirectMessage {
+  content: string;
+  from: string;
 }
 
 export interface ChatRoom {
