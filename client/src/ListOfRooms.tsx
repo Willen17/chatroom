@@ -4,8 +4,14 @@ import { useSocket } from "./SocketContext";
 import { Link } from "react-router-dom";
 
 const ListOfRooms = () => {
-  const { rooms, currentRoom, socket, setCurrentRoom, allConnectedUsers } =
-    useSocket();
+  const {
+    rooms,
+    currentRoom,
+    socket,
+    setCurrentRoom,
+    allConnectedUsers,
+    handleOpenDM,
+  } = useSocket();
   const [checked, setChecked] = useState(false);
 
   const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -120,19 +126,24 @@ const ListOfRooms = () => {
         ) : (
           allConnectedUsers.map((user) => (
             <ListItem key={user.userID} sx={{ padding: 0 }}>
-              <Link to="/newMessage" style={{ textDecoration: "none" }}>
-                <Typography
-                  color="#f4f1de"
-                  variant="body1"
-                  sx={{
-                    fontFamily: "League Spartan",
-                    pl: "1rem",
-                    transition: 0,
-                  }}
-                >
-                  {user.username}
-                </Typography>
-              </Link>
+              {/* <Link to="/newMessage" style={{ textDecoration: "none" }}> */}
+              <Button
+                variant="text"
+                size="small"
+                sx={{
+                  fontFamily: "League Spartan",
+                  letterSpacing: "none",
+                  textTransform: "none",
+                  fontSize: "1rem",
+                  color: "#F2CC8F",
+                  boxShadow: "none",
+                  minWidth: "auto",
+                }}
+                onClick={handleOpenDM}
+              >
+                {user.username}
+              </Button>
+              {/* </Link> */}
             </ListItem>
           ))
         )}
