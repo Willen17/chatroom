@@ -15,6 +15,7 @@ function App() {
             <Route index element={<NameInput />} />
             <Route path="/room" element={<RoomInput />} />
             <Route path="/chat" element={<ChatInput />} />
+            <Route path="/newMessage" element="new message" />
           </Route>
         </Routes>
       </SocketProvider>
