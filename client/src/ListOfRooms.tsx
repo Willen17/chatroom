@@ -1,14 +1,13 @@
-import { Box, Button, Typography } from "@mui/material";
-import { useEffect } from "react";
+import { Box, Button, Grow, Typography } from "@mui/material";
+import React, { useState } from "react";
 import { useSocket } from "./SocketContext";
 
 const ListOfRooms = () => {
-  const { rooms, currentRoom, socket, setCurrentRoom, clientList } =
-    useSocket();
+  const { rooms, currentRoom, socket, setCurrentRoom } = useSocket();
+  const [checked, setChecked] = useState(false);
 
   const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    console.log(e.currentTarget.innerText);
     let theRoom = e.currentTarget.innerText;
     if (theRoom) {
       socket!.emit("leave", currentRoom);
@@ -18,11 +17,10 @@ const ListOfRooms = () => {
     }
   };
 
-  // useEffect(() => {
-  //   rooms.map((room) => socket?.emit("clients", room));
-  // }, [socket]);
+  const showClients = (e: React.MouseEvent<HTMLButtonElement>) => {
+    checked ? setChecked(false) : setChecked(true);
+  };
 
-  console.log(clientList);
   return (
     <Box
       sx={{
@@ -41,28 +39,65 @@ const ListOfRooms = () => {
             }}
           >
             <Box>
-              <Button
-                variant="text"
-                size="small"
+              <Box
                 sx={{
-                  fontFamily: "League Spartan",
-                  letterSpacing: "none",
-                  textTransform: "none",
-                  fontSize: "1rem",
-                  color: "#F2CC8F",
-                  boxShadow: "none",
+                  display: "flex",
+                  flexDirection: "row",
+                  placeItems: "center",
                 }}
-                onClick={handleSubmit}
               >
-                {room.name}
-              </Button>
-              <div>
+                <Button
+                  variant="text"
+                  size="small"
+                  sx={{
+                    fontFamily: "League Spartan",
+                    letterSpacing: "none",
+                    textTransform: "none",
+                    fontSize: "1rem",
+                    color: "#F2CC8F",
+                    boxShadow: "none",
+                    minWidth: "auto",
+                  }}
+                  onClick={handleSubmit}
+                >
+                  {room.name}
+                </Button>
+                <Typography
+                  key={index}
+                  variant="overline"
+                  color="#8184A7"
+                  sx={{
+                    fontFamily: "League Spartan",
+                    letterSpacing: "none",
+                    cursor: "pointer",
+                  }}
+                  onClick={showClients}
+                >
+                  ({room.sockets.length})
+                </Typography>
+              </Box>
+              <Box sx={{ height: checked ? "fit-content" : 0 }}>
                 {room.sockets.map((user, index) => (
-                  <Typography key={index} variant="body2">
-                    {user.nickname}
-                  </Typography>
+                  <Grow
+                    key={index}
+                    in={checked}
+                    {...(checked ? { timeout: 500 } : { timeout: 0 })}
+                  >
+                    <Typography
+                      color="#f4f1de"
+                      variant="body2"
+                      sx={{
+                        fontFamily: "League Spartan",
+                        letterSpacing: "none",
+                        pl: "1rem",
+                        transition: 0,
+                      }}
+                    >
+                      {user.nickname}
+                    </Typography>
+                  </Grow>
                 ))}
-              </div>
+              </Box>
             </Box>
           </li>
         ))}

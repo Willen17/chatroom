@@ -9,27 +9,20 @@ import {
 
 interface ContextType {
   socket: Socket<ServerToClientEvents, ClientToServerEvents> | undefined;
+  nickname: string;
   rooms: ChatRoom[];
   setCurrentRoom: React.Dispatch<React.SetStateAction<string>>;
   currentRoom: string;
-  clients: String[];
-  noOfClients: number;
   isTypingBlock: string;
   loggedIn: boolean;
   setLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
   leaveRoom: () => void;
   messageList: MessageType[];
-  clientList: ClientListType[];
 }
 
 interface MessageType {
   message: string;
   from: string;
-}
-
-export interface ClientListType {
-  room: string;
-  clients: string[];
 }
 
 type Props = {
@@ -38,30 +31,26 @@ type Props = {
 
 export const SocketContext = createContext<ContextType>({
   socket: undefined,
+  nickname: "",
   rooms: [],
   setCurrentRoom: () => {},
   currentRoom: "",
-  clients: [],
-  noOfClients: 0,
   isTypingBlock: "",
   loggedIn: false,
   setLoggedIn: () => {},
   leaveRoom: () => {},
   messageList: [],
-  clientList: [],
 });
 
 const SocketProvider: React.FC<Props> = ({ children }) => {
   const [socket, setSocket] =
     useState<Socket<ServerToClientEvents, ClientToServerEvents>>();
-  const [noOfClients, setNoOfClients] = useState<number>(0);
-  const [clients, setClients] = useState<string[]>([]);
+  const [nickname, setNickname] = useState<string>("");
   const [currentRoom, setCurrentRoom] = useState<string>("");
   const [rooms, setRooms] = useState<ChatRoom[]>([]);
   const [isTypingBlock, setIsTypingBlock] = useState<string>("");
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
   const [messageList, setMessageList] = useState<MessageType[]>([]);
-  const [clientList, setClientList] = useState<ClientListType[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -74,6 +63,13 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
 
   useEffect(() => {
     if (!socket) return;
+
+    //If the connection is succeded then this part runs
+    socket?.on("connected", (nickname) => {
+      setNickname(nickname);
+      setLoggedIn(true);
+      navigate("/room");
+    });
 
     // to list all rooms, put in a use effect
     socket.on("roomList", (listofRooms) => {
@@ -89,44 +85,6 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
         from: from.nickname,
       };
       setMessageList((messagesList) => [...messagesList, messageObject]);
-    });
-
-    socket.on("clients", (room: string, listOfClients: string[]) => {
-      let clientObject: ClientListType = {
-        room: room,
-        clients: listOfClients,
-      };
-
-      // filter out empty room
-      const removeDup = (list: ClientListType[]) => {
-        const clientListToAdd = [...list, clientObject];
-        const filter: ClientListType[] = clientListToAdd.filter(
-          (item) => item.clients.length > 0
-        );
-        setClientList(filter);
-      };
-
-      // if the room name matches
-      if (clientList.some((item) => item.room === clientObject.room)) {
-        // filter out room with duplicated name
-        const filter: ClientListType[] = clientList.filter(
-          (item) => item.room !== clientObject.room
-        );
-        removeDup(filter);
-      } else {
-        removeDup(clientList);
-      }
-    });
-
-    // fetch the number of clients in the room
-    socket.on("clientsInRoom", (noOfClients: number) => {
-      console.log("currentRoom: ", currentRoom, "no of clients: ", noOfClients);
-      setNoOfClients(noOfClients);
-    });
-
-    // fetch the list of clients' nickname in the room
-    socket.on("ListOfClientsInRoom", (clients: string[]) => {
-      setClients(clients);
     });
 
     // fetch the typing status of user
@@ -149,24 +107,19 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
     socket!.emit("leave", currentRoom);
   };
 
-  // console.log("no. of clients in room: ", noOfClients);
-  // console.log(clients);
-
   return (
     <SocketContext.Provider
       value={{
         socket,
+        nickname,
         rooms,
         setCurrentRoom,
         currentRoom,
-        noOfClients,
-        clients,
         isTypingBlock,
         loggedIn,
         setLoggedIn,
         leaveRoom,
         messageList,
-        clientList,
       }}
     >
       {children}

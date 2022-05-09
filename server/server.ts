@@ -1,12 +1,12 @@
 import { Server, Socket } from "socket.io";
 import {
   ClientToServerEvents,
-  ServerToClientEvents,
   InterServerEvents,
   ServerSocketData,
+  ServerToClientEvents,
 } from "../types";
-import { getRooms } from "./roomStore";
 import registerChatHandler from "./chatHandler";
+import { getRooms } from "./roomStore";
 
 const io = new Server<
   ClientToServerEvents,
@@ -40,13 +40,3 @@ io.on("connection", (socket) => {
 });
 
 io.listen(3001);
-
-// socket.emit("welcome", "Welcome to our chat app!");
-
-// socket.on("chat message", (message) => {
-//   io.emit("chat message", message);
-// });
-
-// socket.on("disconnect", () => {
-//   console.log("user disconnected");
-// });

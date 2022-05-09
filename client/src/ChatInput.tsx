@@ -5,7 +5,7 @@ import IsTypingBlock from "./components/IsTypingBlock";
 import { useSocket } from "./SocketContext";
 
 const ChatInput = () => {
-  const { socket, currentRoom, leaveRoom, messageList } = useSocket();
+  const { socket, currentRoom, leaveRoom, messageList, nickname } = useSocket();
   const [chatMessage, setChatMessage] = useState<string>("");
 
   const updateChatMessage = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -100,7 +100,56 @@ const ChatInput = () => {
       >
         {messageList?.map((message, index) => (
           <li key={index}>
-            {message.from}: {message.message}
+            {message.from === nickname ? (
+              <Box
+                sx={{
+                  bgcolor: "#E07A5F",
+                  borderRadius: "20px",
+                  height: "fit-content",
+                  padding: ".8rem 1rem",
+                  width: "60%",
+                  minWidth: "250px",
+                  float: "right",
+                  mb: "1rem",
+                }}
+              >
+                <Typography
+                  fontFamily="League Spartan"
+                  variant="body2"
+                  color="#3D405B"
+                  sx={{ textAlign: "end" }}
+                >
+                  <span style={{ color: "#F2CC8F", fontSize: "12px" }}>
+                    {message.from} <br />
+                  </span>{" "}
+                  {message.message}
+                </Typography>
+              </Box>
+            ) : (
+              <Box
+                sx={{
+                  bgcolor: "#F4F1DE",
+                  borderRadius: "20px",
+                  height: "fit-content",
+                  padding: "1rem",
+                  width: "60%",
+                  minWidth: "250px",
+                  float: "left",
+                  mb: "1rem",
+                }}
+              >
+                <Typography
+                  fontFamily="League Spartan"
+                  variant="body2"
+                  color="#3D405B"
+                >
+                  <span style={{ color: "#F2CC8F", fontSize: "12px" }}>
+                    {message.from} <br />
+                  </span>{" "}
+                  {message.message}
+                </Typography>
+              </Box>
+            )}
           </li>
         ))}
       </ul>
@@ -128,7 +177,7 @@ const ChatInput = () => {
             value={chatMessage}
             onChange={updateChatMessage}
             onKeyDown={() => {
-              socket?.emit("typing");
+              socket?.emit("typing", currentRoom);
             }}
             id="input"
             style={{
@@ -176,7 +225,7 @@ const blockAndFormDivStyle: CSSProperties = {
   right: 0,
   display: "flex",
   flexDirection: "column",
-  height: "4.5rem",
+  height: "5rem",
   boxSizing: "border-box",
 };
 

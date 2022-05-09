@@ -7,8 +7,7 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import backgroundIMG from "./assets/background.png";
 import { ReactComponent as BirdLogo } from "./assets/bird.svg";
 import { useSocket } from "./SocketContext";
@@ -18,8 +17,6 @@ const NameInput = () => {
   const [userName, setUserName] = useState<string>("");
   const matches = useMediaQuery("(max-width:650px)");
   const matches2 = useMediaQuery("(max-width:455px)");
-
-  const navigate = useNavigate();
 
   const updateName = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserName(e.target.value);
@@ -34,15 +31,6 @@ const NameInput = () => {
       console.log("Username cannot be empty");
     }
   };
-
-  useEffect(() => {
-    //If the connection is succeded then this part runs
-    socket?.on("connected", (nickname) => {
-      console.log("Connected: ", nickname);
-      setLoggedIn(true);
-      navigate("/room");
-    });
-  }, [socket]);
 
   //If the connection part fails, this code runs, i.e the nickname is shorter than 3 characters.
   socket?.on("connect_error", (err) => {
@@ -153,6 +141,7 @@ const NameInput = () => {
                 />
                 <TextField
                   fullWidth
+                  inputProps={{ maxLength: 20 }}
                   autoComplete="off"
                   autoCorrect="off"
                   sx={formStyling}
