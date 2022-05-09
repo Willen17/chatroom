@@ -41,4 +41,13 @@ export default (io: Server, socket: Socket) => {
     socket.emit("left", room);
     io.emit("roomList", getRooms(io));
   });
+
+  // DM functionality below
+
+  socket.on("privateMessage", (content, to) => {
+    socket.to(to).emit("privateMessage", {
+      content: content,
+      from: socket.id,
+    });
+  });
 };
