@@ -48,8 +48,14 @@ export const SocketContext = createContext<ContextType>({
 });
 
 const SocketProvider: React.FC<Props> = ({ children }) => {
-  const [socket, setSocket] =
-    useState<Socket<ServerToClientEvents, ClientToServerEvents>>();
+  const [socket] = useState<Socket<ServerToClientEvents, ClientToServerEvents>>(
+    () => {
+      return io({
+        autoConnect: false,
+        path: "/socket",
+      });
+    }
+  );
   const [nickname, setNickname] = useState<string>("");
   const [currentRoom, setCurrentRoom] = useState<string>("");
   const [rooms, setRooms] = useState<ChatRoom[]>([]);
@@ -64,22 +70,19 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const newSocket: Socket<ServerToClientEvents, ClientToServerEvents> = io({
-      autoConnect: false,
-      path: "/socket",
-    });
-    setSocket(newSocket);
-  }, []);
-
-  useEffect(() => {
-    if (!socket) return;
-
     //If the connection is succeded then this part runs
     socket?.on("connected", (newUser) => {
       setNickname(newUser.username);
       setLoggedIn(true);
 
       navigate("/room");
+    });
+
+    //If the connection part fails, this code runs, i.e the nickname is shorter than 3 characters.
+    socket?.on("connect_error", (err) => {
+      if (err.message === "Invalid nickname") {
+        console.log("You have entered an invalid username, try again.");
+      }
     });
 
     socket.on("users", (users) => {
