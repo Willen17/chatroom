@@ -6,5 +6,5 @@ export function getIDFromName(io: Server, username: string) {
   console.log(username);
   let filter = getUsers(io).filter((user) => user.username === username);
 
-  return filter;
+  return filter[0].userID;
 }
