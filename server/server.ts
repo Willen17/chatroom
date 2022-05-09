@@ -29,17 +29,21 @@ io.on("connection", (socket) => {
   console.log("a user connected");
 
   if (socket.data.nickname) {
-    socket.emit("users", getUsers(io));
     socket.emit("connected", {
       userID: socket.id,
       username: socket.data.nickname,
     });
+
+    console.log(getUsers(io));
+    io.emit("users", getUsers(io));
     socket.emit("roomList", getRooms(io));
 
     registerChatHandler(io, socket);
   }
 
   socket.on("disconnect", function () {
+    io.emit("users", getUsers(io));
+    console.log(getUsers(io));
     console.log("user disconnected");
   });
 });
