@@ -42,8 +42,7 @@ io.on("connection", (socket) => {
   }
 
   socket.on("getUserID", (username) => {
-    console.log("poop");
-    console.log(getIDFromName(io, username));
+    socket.emit("sendUserID", getIDFromName(io, username));
   });
 
   socket.on("disconnect", function () {
