@@ -7,6 +7,7 @@ import {
   Users,
 } from "../types";
 import registerChatHandler from "./chatHandler";
+import { getIDFromName } from "./directMessages";
 import { getRooms, getUsers } from "./roomStore";
 
 const io = new Server<
@@ -34,16 +35,20 @@ io.on("connection", (socket) => {
       username: socket.data.nickname,
     });
 
-    console.log(getUsers(io));
     io.emit("users", getUsers(io));
     socket.emit("roomList", getRooms(io));
 
     registerChatHandler(io, socket);
   }
 
+  socket.on("getUserID", (username) => {
+    console.log("poop");
+    console.log(getIDFromName(io, username));
+  });
+
   socket.on("disconnect", function () {
     io.emit("users", getUsers(io));
-    console.log(getUsers(io));
+
     console.log("user disconnected");
   });
 });
