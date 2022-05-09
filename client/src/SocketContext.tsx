@@ -4,6 +4,7 @@ import { io, Socket } from "socket.io-client";
 import {
   ChatRoom,
   ClientToServerEvents,
+  DirectMessage,
   ServerToClientEvents,
   Users,
 } from "../../types";
@@ -19,9 +20,11 @@ interface ContextType {
   setLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
   leaveRoom: () => void;
   messageList: MessageType[];
+  dmList: DirectMessage[];
   currentUser: Users;
   allConnectedUsers: Users[];
   handleOpenDM: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  recipientID: string;
 }
 
 interface MessageType {
@@ -47,6 +50,8 @@ export const SocketContext = createContext<ContextType>({
   currentUser: { userID: "", username: "" },
   allConnectedUsers: [],
   handleOpenDM: () => {},
+  recipientID: "",
+  dmList: [],
 });
 
 const SocketProvider: React.FC<Props> = ({ children }) => {
@@ -64,10 +69,12 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
   const [isTypingBlock, setIsTypingBlock] = useState<string>("");
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
   const [messageList, setMessageList] = useState<MessageType[]>([]);
+  const [dmList, setDmList] = useState<DirectMessage[]>([]);
   const [currentUser, setCurrentUser] = useState<Users>({
     userID: "",
     username: "",
   });
+  const [recipientID, setRecipientID] = useState<string>("");
   const [allConnectedUsers, setAllConnectedUsers] = useState<Users[]>([]);
   const navigate = useNavigate();
 
@@ -112,12 +119,41 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
       setMessageList((messagesList) => [...messagesList, messageObject]);
     });
 
+    socket.on("privateMessage", (content, from) => {
+      for (let i = 0; i < allConnectedUsers.length; i++) {
+        const user = allConnectedUsers[i];
+        if (user.userID === from) {
+          user.messages?.push({ content: content, from: from });
+        }
+        if (user.userID !== recipientID) {
+          console.log("has new message");
+        }
+        break;
+      }
+
+      let messageObject: DirectMessage = {
+        content,
+        from,
+      };
+
+      console.log(messageObject);
+
+      setDmList((dmList) => [...dmList, messageObject]);
+    });
+
     // fetch the typing status of user
     socket.on("isTypingIndicator", (nickname: string) => {
       if (nickname) {
         setIsTypingBlock(`${nickname} is typing...`);
         setTimeout(() => setIsTypingBlock(""), 2000);
       }
+    });
+
+    socket.on("sendUserID", (userID) => {
+      setRecipientID(userID);
+      setTimeout(() => {
+        navigate("/dm");
+      }, 2000);
     });
 
     // set leave room of user
@@ -140,6 +176,8 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
     socket.emit("getUserID", selectedUser);
   };
 
+  console.log(dmList);
+
   console.log(allConnectedUsers);
   console.log(currentUser);
 
@@ -159,6 +197,8 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
         currentUser,
         allConnectedUsers,
         handleOpenDM,
+        recipientID,
+        dmList,
       }}
     >
       {children}
