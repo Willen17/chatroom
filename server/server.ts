@@ -4,9 +4,10 @@ import {
   InterServerEvents,
   ServerSocketData,
   ServerToClientEvents,
+  Users,
 } from "../types";
 import registerChatHandler from "./chatHandler";
-import { getRooms } from "./roomStore";
+import { getRooms, getUsers } from "./roomStore";
 
 const io = new Server<
   ClientToServerEvents,
@@ -28,7 +29,11 @@ io.on("connection", (socket) => {
   console.log("a user connected");
 
   if (socket.data.nickname) {
-    socket.emit("connected", socket.data.nickname);
+    socket.emit("users", getUsers(io));
+    socket.emit("connected", {
+      userID: socket.id,
+      username: socket.data.nickname,
+    });
     socket.emit("roomList", getRooms(io));
 
     registerChatHandler(io, socket);
