@@ -1,6 +1,7 @@
-import { Box, Button, Grow, Typography } from "@mui/material";
+import { Box, Button, Grow, List, ListItem, Typography } from "@mui/material";
 import React, { useState } from "react";
 import { useSocket } from "./SocketContext";
+import { Link } from "react-router-dom";
 
 const ListOfRooms = () => {
   const { rooms, currentRoom, socket, setCurrentRoom, allConnectedUsers } =
@@ -93,7 +94,7 @@ const ListOfRooms = () => {
                   >
                     <Typography
                       color="#f4f1de"
-                      variant="body2"
+                      variant="body1"
                       sx={{
                         fontFamily: "League Spartan",
                         letterSpacing: "none",
@@ -110,6 +111,32 @@ const ListOfRooms = () => {
           </li>
         ))}
       </ul>
+      <List sx={{ pl: "1rem" }}>
+        <Typography fontFamily="League Spartan" color="#81B29A" sx={{}}>
+          Online ({allConnectedUsers.length})
+        </Typography>
+        {allConnectedUsers.length < 1 ? (
+          <ListItem>No online users</ListItem>
+        ) : (
+          allConnectedUsers.map((user) => (
+            <ListItem key={user.userID} sx={{ padding: 0 }}>
+              <Link to="/newMessage" style={{ textDecoration: "none" }}>
+                <Typography
+                  color="#f4f1de"
+                  variant="body1"
+                  sx={{
+                    fontFamily: "League Spartan",
+                    pl: "1rem",
+                    transition: 0,
+                  }}
+                >
+                  {user.username}
+                </Typography>
+              </Link>
+            </ListItem>
+          ))
+        )}
+      </List>
     </Box>
   );
 };
