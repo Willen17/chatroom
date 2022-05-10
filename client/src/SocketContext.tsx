@@ -155,9 +155,14 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
 
     // send private message between connected users
     socket.on("privateMessage", (content, from) => {
-      from === currentUserRef.current.userID
-        ? console.log("from self")
-        : console.log("new message");
+      if (from === currentUserRef.current.userID) {
+        console.log("from self");
+      } else {
+        let username = allConnectedUsersRef.current.find(
+          (user) => user.userID === from
+        );
+        console.log(`New message from ${username?.username}`);
+      }
 
       let messageObject: DirectMessage = {
         content,
