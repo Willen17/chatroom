@@ -13,6 +13,9 @@ const DmInput = () => {
     setChatMessage(e.target.value);
   };
 
+  console.log("from dminput");
+  console.log(dmList);
+
   useEffect(() => {
     const msgElement = document.getElementById("messages");
     msgElement!.scrollTo(0, document.body.scrollHeight);
@@ -21,8 +24,7 @@ const DmInput = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (chatMessage.length) {
-      let messageObject = { content: chatMessage, from: recipientID };
-      socket!.emit("privateMessage", messageObject.content, messageObject.from);
+      socket!.emit("privateMessage", chatMessage, recipientID as string);
       setChatMessage("");
     } else {
       return;
