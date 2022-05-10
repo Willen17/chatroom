@@ -9,6 +9,7 @@ export interface ServerToClientEvents {
   users: (users: User[]) => void;
   sendUserID: (userID: string) => void;
   privateMessage: (content: string, from: string) => void;
+  initSession: (session: SessionInterface) => void;
 }
 
 export interface ClientToServerEvents {
@@ -20,10 +21,18 @@ export interface ClientToServerEvents {
   privateMessage: (content: string, to: string) => void;
 }
 
+export interface SessionInterface {
+  sessionID: string;
+  userID: string;
+  nickname: string;
+}
+
 export interface InterServerEvents {}
 
 export interface ServerSocketData {
   nickname: string;
+  sessionID: string;
+  userID: string;
 }
 
 export interface User {
