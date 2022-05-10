@@ -1,5 +1,5 @@
 import { Server } from "socket.io";
-import { ChatRoom, ServerSocketData, Users } from "../types";
+import { ChatRoom, ServerSocketData, User } from "../types";
 
 export function getRooms(io: Server): ChatRoom[] {
   const rooms: ChatRoom[] = [];
@@ -18,8 +18,8 @@ export function getRooms(io: Server): ChatRoom[] {
   return rooms;
 }
 
-export function getUsers(io: Server): Users[] {
-  const users: Users[] = [];
+export function getUsers(io: Server): User[] {
+  const users: User[] = [];
 
   for (let [id, socket] of io.sockets.sockets) {
     users.push({

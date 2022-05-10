@@ -8,7 +8,6 @@ export default (io: Server, socket: Socket) => {
     socket.join(room);
     if (!getRooms(io).some((e) => e.name == room)) {
       io.emit("roomList", getRooms(io));
-      console.log(getRooms(io));
     }
     io.emit("roomList", getRooms(io));
 
@@ -41,5 +40,13 @@ export default (io: Server, socket: Socket) => {
     console.log("user left the room");
     socket.emit("left", room);
     io.emit("roomList", getRooms(io));
+  });
+
+  // DM functionality below
+
+  socket.on("privateMessage", (content, to) => {
+    console.log(to, socket.id);
+    socket.to(to).emit("privateMessage", content, socket.id);
+    socket.emit("privateMessage", content, socket.id);
   });
 };

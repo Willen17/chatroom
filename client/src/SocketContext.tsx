@@ -1,11 +1,12 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { io, Socket } from "socket.io-client";
 import {
   ChatRoom,
   ClientToServerEvents,
+  DirectMessage,
   ServerToClientEvents,
-  Users,
+  User,
 } from "../../types";
 
 interface ContextType {
@@ -19,8 +20,11 @@ interface ContextType {
   setLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
   leaveRoom: () => void;
   messageList: MessageType[];
-  currentUser: Users;
-  allConnectedUsers: Users[];
+  dmList: DirectMessage[];
+  currentUser: User;
+  allConnectedUsers: User[];
+  handleOpenDM: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  recipientID: string;
 }
 
 interface MessageType {
@@ -45,7 +49,20 @@ export const SocketContext = createContext<ContextType>({
   messageList: [],
   currentUser: { userID: "", username: "" },
   allConnectedUsers: [],
+  handleOpenDM: () => {},
+  recipientID: "",
+  dmList: [{ content: "", from: "" }],
 });
+
+// {
+//   'Millie': []
+//   'David': []
+//   'My': []
+// }
+
+// const object: {[key: string]: DirectMessage[]} = {}
+// const map = new Map<string, DirectMessage[]>()
+// map.get('David')
 
 const SocketProvider: React.FC<Props> = ({ children }) => {
   const [socket] = useState<Socket<ServerToClientEvents, ClientToServerEvents>>(
@@ -62,19 +79,30 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
   const [isTypingBlock, setIsTypingBlock] = useState<string>("");
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
   const [messageList, setMessageList] = useState<MessageType[]>([]);
-  const [currentUser, setCurrentUser] = useState<Users>({
+  const [dmList, setDmList] = useState<DirectMessage[]>([]); //map thing <Map<DirectMessage[]>>
+  const [currentUser, setCurrentUser] = useState<User>({
     userID: "",
     username: "",
   });
-  const [allConnectedUsers, setAllConnectedUsers] = useState<Users[]>([]);
+  const [recipientID, setRecipientID] = useState<string>("");
+  const [allConnectedUsers, setAllConnectedUsers] = useState<User[]>([]);
   const navigate = useNavigate();
+  const allConnectedUsersRef = useRef(allConnectedUsers);
+  const currentUserRef = useRef(currentUser);
+  const recipientIdRef = useRef(recipientID);
+
+  useEffect(() => {
+    allConnectedUsersRef.current = allConnectedUsers;
+    currentUserRef.current = currentUser;
+    recipientIdRef.current = recipientID;
+  });
 
   useEffect(() => {
     //If the connection is succeded then this part runs
     socket?.on("connected", (newUser) => {
       setNickname(newUser.username);
+      setCurrentUser(newUser);
       setLoggedIn(true);
-
       navigate("/room");
     });
 
@@ -85,19 +113,13 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
       }
     });
 
-    socket.on("users", (users) => {
-      users.forEach((user) => {
-        if (user.userID === socket.id) {
-          setCurrentUser(user);
-        }
-      });
+    socket?.on("users", (users) => {
       setAllConnectedUsers(users);
     });
 
     // to list all rooms, put in a use effect
     socket.on("roomList", (listofRooms) => {
       console.log(listofRooms);
-
       setRooms(listofRooms);
     });
 
@@ -118,10 +140,35 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
       }
     });
 
+    socket.on("sendUserID", (userID) => {
+      setRecipientID(userID);
+      setTimeout(() => {
+        navigate("/dm");
+      }, 500);
+    });
+
     // set leave room of user
     socket.on("left", (room) => {
       console.log("Left room: ", room);
       navigate("/room");
+    });
+
+    // send private message between connected users
+    socket.on("privateMessage", (content, from) => {
+      if (from === currentUserRef.current.userID) {
+        console.log("from self");
+      } else {
+        let username = allConnectedUsersRef.current.find(
+          (user) => user.userID === from
+        );
+        console.log(`New message from ${username?.username}`);
+      }
+
+      let messageObject: DirectMessage = {
+        content,
+        from,
+      };
+      setDmList((dmList) => [...dmList, messageObject]);
     });
   }, [socket]);
 
@@ -130,7 +177,17 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
     socket!.emit("leave", currentRoom);
   };
 
-  console.log(allConnectedUsers);
+  const handleOpenDM = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    let selectedUser = e.currentTarget.innerText;
+    console.log(selectedUser);
+
+    socket.emit("getUserID", selectedUser);
+  };
+
+  // console.log(dmList);
+  // console.log(messageList);
+  // console.log(allConnectedUsers);
   console.log(currentUser);
 
   return (
@@ -148,6 +205,9 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
         messageList,
         currentUser,
         allConnectedUsers,
+        handleOpenDM,
+        recipientID,
+        dmList,
       }}
     >
       {children}

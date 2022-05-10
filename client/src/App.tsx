@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
 import ChatInput from "./ChatInput";
+import DmInput from "./DmInput";
 import Layout from "./Layout";
 import NameInput from "./NameInput";
 import RoomInput from "./RoomInput";
@@ -15,7 +16,7 @@ function App() {
             <Route index element={<NameInput />} />
             <Route path="/room" element={<RoomInput />} />
             <Route path="/chat" element={<ChatInput />} />
-            <Route path="/newMessage" element="new message" />
+            <Route path="/dm" element={<DmInput />} />
           </Route>
         </Routes>
       </SocketProvider>
