@@ -5,8 +5,15 @@ import IsTypingBlock from "./components/IsTypingBlock";
 import { useSocket } from "./SocketContext";
 
 const DmInput = () => {
-  const { socket, currentRoom, leaveRoom, dmList, nickname, recipientID } =
-    useSocket();
+  const {
+    socket,
+    currentRoom,
+    leaveRoom,
+    dmList,
+    nickname,
+    recipientID,
+    currentUser,
+  } = useSocket();
   const [chatMessage, setChatMessage] = useState<string>("");
 
   const updateChatMessage = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -104,7 +111,7 @@ const DmInput = () => {
       >
         {dmList?.map((message, index) => (
           <li key={index}>
-            {message.from === nickname ? (
+            {message.from === currentUser.userID ? (
               <Box
                 sx={{
                   bgcolor: "#E07A5F",
