@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { io, Socket } from "socket.io-client";
 import {
@@ -87,6 +87,15 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
   const [recipientID, setRecipientID] = useState<string>("");
   const [allConnectedUsers, setAllConnectedUsers] = useState<User[]>([]);
   const navigate = useNavigate();
+  const allConnectedUsersRef = useRef(allConnectedUsers);
+  const currentUserRef = useRef(currentUser);
+  const recipientIdRef = useRef(recipientID);
+
+  useEffect(() => {
+    allConnectedUsersRef.current = allConnectedUsers;
+    currentUserRef.current = currentUser;
+    recipientIdRef.current = recipientID;
+  });
 
   useEffect(() => {
     //If the connection is succeded then this part runs
@@ -94,7 +103,6 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
       setNickname(newUser.username);
       setCurrentUser(newUser);
       setLoggedIn(true);
-
       navigate("/room");
     });
 
@@ -105,19 +113,13 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
       }
     });
 
-    socket.on("users", (users) => {
-      users.forEach((user) => {
-        if (user.userID === socket.id) {
-          setCurrentUser(user);
-        }
-      });
+    socket?.on("users", (users) => {
       setAllConnectedUsers(users);
     });
 
     // to list all rooms, put in a use effect
     socket.on("roomList", (listofRooms) => {
       console.log(listofRooms);
-
       setRooms(listofRooms);
     });
 
@@ -128,29 +130,6 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
         from: from.nickname,
       };
       setMessageList((messagesList) => [...messagesList, messageObject]);
-    });
-
-    socket.on("privateMessage", (content, from) => {
-      for (let i = 0; i < allConnectedUsers.length; i++) {
-        const user = allConnectedUsers[i];
-        if (user.userID === from) {
-          console.log("FROM SELF");
-          user.messages?.push({ content: content, from: from });
-        }
-        if (user.userID !== recipientID) {
-          console.log("has new message");
-        }
-        break;
-      }
-
-      let messageObject: DirectMessage = {
-        content,
-        from,
-      };
-
-      console.log(messageObject);
-
-      setDmList((dmList) => [...dmList, messageObject]);
     });
 
     // fetch the typing status of user
@@ -165,13 +144,32 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
       setRecipientID(userID);
       setTimeout(() => {
         navigate("/dm");
-      }, 2000);
+      }, 500);
     });
 
     // set leave room of user
     socket.on("left", (room) => {
       console.log("Left room: ", room);
       navigate("/room");
+    });
+
+    // send private message between connected users
+    socket.on("privateMessage", (content, from) => {
+      if (from === currentUserRef.current.userID) {
+        console.log("from self");
+      }
+      for (let i = 0; i < allConnectedUsersRef.current.length; i++) {
+        const user = allConnectedUsersRef.current[i];
+        if (user.userID !== recipientIdRef.current) {
+          console.log("has new message");
+        }
+        break;
+      }
+      let messageObject: DirectMessage = {
+        content,
+        from,
+      };
+      setDmList((dmList) => [...dmList, messageObject]);
     });
   }, [socket]);
 
@@ -188,9 +186,9 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
     socket.emit("getUserID", selectedUser);
   };
 
-  console.log(dmList);
-  console.log(messageList);
-  console.log(allConnectedUsers);
+  // console.log(dmList);
+  // console.log(messageList);
+  // console.log(allConnectedUsers);
   console.log(currentUser);
 
   return (
