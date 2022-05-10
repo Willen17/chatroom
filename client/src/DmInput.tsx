@@ -13,6 +13,7 @@ const DmInput = () => {
     nickname,
     recipientID,
     currentUser,
+    allConnectedUsers,
   } = useSocket();
   const [chatMessage, setChatMessage] = useState<string>("");
 
@@ -43,6 +44,11 @@ const DmInput = () => {
     messageList!.innerHTML = "";
   }, [recipientID]);
 
+  const getUserName = (id: string) => {
+    let user = allConnectedUsers.find((user) => user.userID === id);
+    return user?.username;
+  };
+
   return (
     <Box
       style={{
@@ -72,7 +78,7 @@ const DmInput = () => {
             textTransform: "none",
           }}
         >
-          {recipientID}
+          {getUserName(recipientID)}
         </Typography>
         <Button
           variant="contained"
@@ -114,7 +120,7 @@ const DmInput = () => {
             {message.from === currentUser.userID ? (
               <Box
                 sx={{
-                  bgcolor: "#E07A5F",
+                  bgcolor: "#606384",
                   borderRadius: "20px",
                   height: "fit-content",
                   padding: ".8rem 1rem",
@@ -127,11 +133,11 @@ const DmInput = () => {
                 <Typography
                   fontFamily="League Spartan"
                   variant="body2"
-                  color="#3D405B"
+                  color="#F4F1DE"
                   sx={{ textAlign: "end" }}
                 >
                   <span style={{ color: "#F2CC8F", fontSize: "12px" }}>
-                    {message.from} <br />
+                    You <br />
                   </span>{" "}
                   {message.content}
                 </Typography>
@@ -154,8 +160,8 @@ const DmInput = () => {
                   variant="body2"
                   color="#3D405B"
                 >
-                  <span style={{ color: "#F2CC8F", fontSize: "12px" }}>
-                    {message.from} <br />
+                  <span style={{ color: "#606384", fontSize: "12px" }}>
+                    {getUserName(message.from)} <br />
                   </span>{" "}
                   {message.content}
                 </Typography>
