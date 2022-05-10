@@ -155,16 +155,10 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
 
     // send private message between connected users
     socket.on("privateMessage", (content, from) => {
-      if (from === currentUserRef.current.userID) {
-        console.log("from self");
-      }
-      for (let i = 0; i < allConnectedUsersRef.current.length; i++) {
-        const user = allConnectedUsersRef.current[i];
-        if (user.userID !== recipientIdRef.current) {
-          console.log("has new message");
-        }
-        break;
-      }
+      from === currentUserRef.current.userID
+        ? console.log("from self")
+        : console.log("new message");
+
       let messageObject: DirectMessage = {
         content,
         from,
