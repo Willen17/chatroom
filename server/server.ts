@@ -4,7 +4,7 @@ import {
   InterServerEvents,
   ServerSocketData,
   ServerToClientEvents,
-  Users,
+  User,
 } from "../types";
 import registerChatHandler from "./chatHandler";
 import { getIDFromName } from "./directMessages";

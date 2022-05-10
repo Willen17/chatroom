@@ -6,7 +6,7 @@ import {
   ClientToServerEvents,
   DirectMessage,
   ServerToClientEvents,
-  Users,
+  User,
 } from "../../types";
 
 interface ContextType {
@@ -21,8 +21,8 @@ interface ContextType {
   leaveRoom: () => void;
   messageList: MessageType[];
   dmList: DirectMessage[];
-  currentUser: Users;
-  allConnectedUsers: Users[];
+  currentUser: User;
+  allConnectedUsers: User[];
   handleOpenDM: (e: React.MouseEvent<HTMLButtonElement>) => void;
   recipientID: string;
 }
@@ -54,6 +54,16 @@ export const SocketContext = createContext<ContextType>({
   dmList: [{ content: "", from: "" }],
 });
 
+// {
+//   'Millie': []
+//   'David': []
+//   'My': []
+// }
+
+// const object: {[key: string]: DirectMessage[]} = {}
+// const map = new Map<string, DirectMessage[]>()
+// map.get('David')
+
 const SocketProvider: React.FC<Props> = ({ children }) => {
   const [socket] = useState<Socket<ServerToClientEvents, ClientToServerEvents>>(
     () => {
@@ -69,19 +79,20 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
   const [isTypingBlock, setIsTypingBlock] = useState<string>("");
   const [loggedIn, setLoggedIn] = useState<boolean>(false);
   const [messageList, setMessageList] = useState<MessageType[]>([]);
-  const [dmList, setDmList] = useState<DirectMessage[]>([]);
-  const [currentUser, setCurrentUser] = useState<Users>({
+  const [dmList, setDmList] = useState<DirectMessage[]>([]); //map thing <Map<DirectMessage[]>>
+  const [currentUser, setCurrentUser] = useState<User>({
     userID: "",
     username: "",
   });
   const [recipientID, setRecipientID] = useState<string>("");
-  const [allConnectedUsers, setAllConnectedUsers] = useState<Users[]>([]);
+  const [allConnectedUsers, setAllConnectedUsers] = useState<User[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
     //If the connection is succeded then this part runs
     socket?.on("connected", (newUser) => {
       setNickname(newUser.username);
+      setCurrentUser(newUser);
       setLoggedIn(true);
 
       navigate("/room");
@@ -123,6 +134,7 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
       for (let i = 0; i < allConnectedUsers.length; i++) {
         const user = allConnectedUsers[i];
         if (user.userID === from) {
+          console.log("FROM SELF");
           user.messages?.push({ content: content, from: from });
         }
         if (user.userID !== recipientID) {
