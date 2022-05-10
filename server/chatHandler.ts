@@ -45,9 +45,6 @@ export default (io: Server, socket: Socket) => {
   // DM functionality below
 
   socket.on("privateMessage", (content, to) => {
-    socket.to(to).emit("privateMessage", {
-      content: content,
-      from: socket.id,
-    });
+    socket.to(to).to(socket.id).emit("privateMessage", content, socket.id);
   });
 };

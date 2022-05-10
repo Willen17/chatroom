@@ -51,7 +51,7 @@ export const SocketContext = createContext<ContextType>({
   allConnectedUsers: [],
   handleOpenDM: () => {},
   recipientID: "",
-  dmList: [],
+  dmList: [{ content: "", from: "" }],
 });
 
 const SocketProvider: React.FC<Props> = ({ children }) => {
@@ -177,7 +177,7 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
   };
 
   console.log(dmList);
-
+  console.log(messageList);
   console.log(allConnectedUsers);
   console.log(currentUser);
 
