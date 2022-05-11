@@ -86,6 +86,8 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
   });
   const [recipientID, setRecipientID] = useState<string>("");
   const [allConnectedUsers, setAllConnectedUsers] = useState<User[]>([]);
+  const [userNameAlreadySelected, setUsernameAlreadySelected] =
+    useState<boolean>(false);
   const navigate = useNavigate();
   const allConnectedUsersRef = useRef(allConnectedUsers);
   const currentUserRef = useRef(currentUser);
@@ -104,6 +106,26 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
       setCurrentUser(newUser);
       setLoggedIn(true);
       navigate("/room");
+    });
+
+    const sessionID = localStorage.getItem("sessionID");
+
+    if (sessionID) {
+      setUsernameAlreadySelected(true);
+      socket.auth = { sessionID };
+      socket.connect();
+    }
+
+    socket.on("initSession", ({ sessionID, userID }) => {
+      console.log(sessionID + "this userID: ", userID);
+      // attach the session ID to the next reconnection attempts
+      socket.auth = { sessionID };
+
+      // store it in the localStorage
+      localStorage.setItem("sessionID", sessionID);
+
+      // save the ID of the user
+      // socket.userID = userID
     });
 
     //If the connection part fails, this code runs, i.e the nickname is shorter than 3 characters.
