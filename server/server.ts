@@ -9,7 +9,7 @@ import {
 } from "../types";
 import registerChatHandler from "./chatHandler";
 import { getIDFromName } from "./directMessages";
-import { getRooms, getUsers } from "./roomStore";
+import { getRooms, getUsers, setDisconnected } from "./roomStore";
 import { findSession, saveSession } from "./sessionStore";
 
 const io = new Server<
@@ -50,7 +50,7 @@ io.on("connection", (socket) => {
   saveSession(socket.data.sessionID!, {
     userID: socket.data.userID,
     nickname: socket.data.nickname,
-    connected: true,
+    isConnected: socket.data.isConnected,
   });
 
   socket.emit("initSession", {
@@ -60,8 +60,9 @@ io.on("connection", (socket) => {
   });
   if (socket.data.nickname) {
     socket.emit("connected", {
-      userID: socket.id,
+      userID: socket.data.userID!,
       username: socket.data.nickname,
+      isConnected: socket.data.isConnected!,
     });
 
     io.emit("users", getUsers(io));
@@ -75,6 +76,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", function () {
+    setDisconnected(io, socket.data.userID!);
     io.emit("users", getUsers(io));
 
     console.log("user disconnected");

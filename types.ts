@@ -33,11 +33,13 @@ export interface ServerSocketData {
   nickname: string;
   sessionID: string;
   userID: string;
+  isConnected: boolean;
 }
 
 export interface User {
   userID: string;
   username: string;
+  isConnected: boolean;
   messages?: DirectMessage[] | undefined;
 }
 

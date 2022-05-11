@@ -32,7 +32,7 @@ const DmInput = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (chatMessage.length) {
-      socket!.emit("privateMessage", chatMessage, recipientID as string);
+      socket!.emit("privateMessage", chatMessage, recipientID);
       setChatMessage("");
     } else {
       return;

@@ -14,7 +14,7 @@ const ChatInput = () => {
 
   useEffect(() => {
     const msgElement = document.getElementById("messages");
-    msgElement!.scrollTo(0, document.body.scrollHeight);
+    msgElement!.scrollTo(0, msgElement!.scrollHeight);
   }, [messageList]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -38,7 +38,7 @@ const ChatInput = () => {
         display: "flex",
         flexDirection: "column",
         boxSizing: "border-box",
-        zIndex: 99,
+        zIndex: 100,
       }}
     >
       <Box
@@ -99,7 +99,7 @@ const ChatInput = () => {
         }}
       >
         {messageList?.map((message, index) => (
-          <li key={index}>
+          <li key={index} style={{ marginBottom: "5rem" }}>
             {message.from === nickname ? (
               <Box
                 sx={{
@@ -221,7 +221,7 @@ const blockAndFormDivStyle: CSSProperties = {
   padding: "0.25rem",
   position: "fixed",
   bottom: 0,
-  left: "20vw",
+  left: "0vw",
   right: 0,
   display: "flex",
   flexDirection: "column",

@@ -47,7 +47,7 @@ export const SocketContext = createContext<ContextType>({
   setLoggedIn: () => {},
   leaveRoom: () => {},
   messageList: [],
-  currentUser: { userID: "", username: "" },
+  currentUser: { userID: "", username: "", isConnected: false },
   allConnectedUsers: [],
   handleOpenDM: () => {},
   recipientID: "",
@@ -83,6 +83,7 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
   const [currentUser, setCurrentUser] = useState<User>({
     userID: "",
     username: "",
+    isConnected: false,
   });
   const [recipientID, setRecipientID] = useState<string>("");
   const [allConnectedUsers, setAllConnectedUsers] = useState<User[]>([]);
@@ -184,6 +185,11 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
           (user) => user.userID === from
         );
         console.log(`New message from ${username?.username}`);
+        // let foundIndex = allConnectedUsersRef.current.findIndex(
+        //   (user) => user.userID === username?.userID
+        // );
+        // console.log(allConnectedUsersRef.current[foundIndex]);
+        // setAllConnectedUsers([]);
       }
 
       let messageObject: DirectMessage = {
@@ -209,7 +215,7 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
 
   // console.log(dmList);
   // console.log(messageList);
-  // console.log(allConnectedUsers);
+  console.log(allConnectedUsers);
   console.log(currentUser);
 
   return (
