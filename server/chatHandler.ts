@@ -29,7 +29,7 @@ export default (io: Server, socket: Socket) => {
       return socket.emit("_error", "Missing nickname on socket");
     }
     io.to(to).emit("message", message, {
-      id: socket.id,
+      id: socket.data.userID,
       nickname: socket.data.nickname,
     });
   });
@@ -45,8 +45,12 @@ export default (io: Server, socket: Socket) => {
   // DM functionality below
 
   socket.on("privateMessage", (content, to) => {
-    console.log(to, socket.id);
-    socket.to(to).emit("privateMessage", content, socket.id);
-    socket.emit("privateMessage", content, socket.id);
+    // socket.to(to).emit("privateMessage", content, socket.data.userID);
+    // socket.emit("privateMessage", content, socket.data.userID);
+    socket.to(to).to(socket.data.userID).emit("private message", {
+      content,
+      from: socket.data.userID,
+      to,
+    });
   });
 };
