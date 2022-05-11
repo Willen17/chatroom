@@ -185,11 +185,11 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
           (user) => user.userID === from
         );
         console.log(`New message from ${username?.username}`);
-        let foundIndex = allConnectedUsersRef.current.findIndex(
-          (user) => user.userID === username?.userID
-        );
-        console.log(allConnectedUsersRef.current[foundIndex]);
-        setAllConnectedUsers([]);
+        // let foundIndex = allConnectedUsersRef.current.findIndex(
+        //   (user) => user.userID === username?.userID
+        // );
+        // console.log(allConnectedUsersRef.current[foundIndex]);
+        // setAllConnectedUsers([]);
       }
 
       let messageObject: DirectMessage = {
