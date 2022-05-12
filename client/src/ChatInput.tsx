@@ -103,6 +103,7 @@ const ChatInput = () => {
           padding: "1rem 0",
           height: "calc(100vh - 12rem)",
           overflowY: "scroll",
+          scrollBehavior: "smooth",
         }}
       >
         {messageList?.map((message, index) => (

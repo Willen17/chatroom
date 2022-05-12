@@ -109,6 +109,7 @@ const DmInput = () => {
           padding: "1rem 0",
           height: "calc(100vh - 12rem)",
           overflowY: "scroll",
+          scrollBehavior: "smooth",
         }}
       >
         {dmList?.map((message, index) => (
