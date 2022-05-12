@@ -1,6 +1,7 @@
 import { Logout, Send } from "@mui/icons-material";
 import { Box, Typography, Button } from "@mui/material";
 import { useState, useEffect, CSSProperties } from "react";
+import { DirectMessage } from "../../types";
 import IsTypingBlock from "./components/IsTypingBlock";
 import { useSocket } from "./SocketContext";
 
@@ -38,11 +39,6 @@ const DmInput = () => {
       return;
     }
   };
-
-  useEffect(() => {
-    const messageList = document.getElementById("messages");
-    messageList!.innerHTML = "";
-  }, [recipientID]);
 
   const getUserName = (id: string) => {
     let user = allConnectedUsers.find((user) => user.userID === id);

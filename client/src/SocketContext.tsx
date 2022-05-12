@@ -182,13 +182,6 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
       // );
     });
 
-    socket.on("sendPrivateMessageHistory", (messagesHistory) => {
-      console.log(messagesHistory);
-      if (messagesHistory) {
-        setDmList(messagesHistory);
-      } else setDmList([]);
-    });
-
     // set leave room of user
     socket.on("left", (room) => {
       console.log("Left room: ", room);
@@ -218,6 +211,15 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
       setDmList((dmList) => [...dmList, messageObject]);
     });
   }, [socket]);
+
+  useEffect(() => {
+    socket.on("sendPrivateMessageHistory", (messagesHistory) => {
+      console.log(messagesHistory);
+      if (messagesHistory) {
+        setDmList(messagesHistory);
+      } else setDmList([]);
+    });
+  }, [recipientID]);
 
   // leave a chatroom and be redirected to roomInput
   const leaveRoom = () => {
