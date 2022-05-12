@@ -5,7 +5,7 @@ export interface ServerToClientEvents {
   roomList: (rooms: ChatRoom[]) => void;
   joined: (room: string) => void;
   _error: (errorMessage: string) => void;
-  isTypingIndicator: (nickname: string, room: string) => void;
+  isTypingIndicator: (nickname: string, privateChat?: boolean) => void;
   left: (room: string) => void;
   users: (users: User[]) => void;
   sendUserID: (userID: string) => void;
@@ -17,7 +17,7 @@ export interface ServerToClientEvents {
 export interface ClientToServerEvents {
   message: (message: string, to: string) => void;
   getRoomMessageHistory: (room: string) => void;
-  join: (room: string) => void;
+  join: (room: string, privateChat?: boolean | undefined) => void;
   typing: (room: string, isPrivateChat?: boolean) => void;
   leave: (room: string) => void;
   getUserID: (username: string) => void;

@@ -29,9 +29,11 @@ export default (io: Server, socket: Socket) => {
       let socketIDOfUser = getSocketID(room);
       socket.broadcast
         .to(socketIDOfUser!)
-        .emit("isTypingIndicator", socket.data.nickname);
+        .emit("isTypingIndicator", socket.data.nickname, true);
     } else
-      socket.broadcast.to(room).emit("isTypingIndicator", socket.data.nickname);
+      socket.broadcast
+        .to(room)
+        .emit("isTypingIndicator", socket.data.nickname, false);
   });
 
   socket.on("leave", (room) => {
