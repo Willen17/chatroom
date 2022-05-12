@@ -10,15 +10,17 @@ export interface ServerToClientEvents {
   sendUserID: (userID: string) => void;
   privateMessage: (content: string, from: string) => void;
   initSession: (session: SessionInterface) => void;
+  sendPrivateMessageHistory: (messages: DirectMessage[]) => void;
 }
 
 export interface ClientToServerEvents {
   message: (message: string, to: string) => void;
-  join: (room: string) => void;
+  join: (room: string, privateChat?: boolean | undefined) => void;
   typing: (room: string) => void;
   leave: (room: string) => void;
   getUserID: (username: string) => void;
   privateMessage: (content: string, to: string) => void;
+  getPrivateMessageHistory: (id1: string, id2: string) => void;
 }
 
 export interface SessionInterface {
@@ -34,12 +36,14 @@ export interface ServerSocketData {
   sessionID: string;
   userID: string;
   isConnected: boolean;
+  socketID: string;
 }
 
 export interface User {
   userID: string;
   username: string;
   isConnected: boolean;
+  socketID: string;
   messages?: DirectMessage[] | undefined;
 }
 
