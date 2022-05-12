@@ -191,7 +191,7 @@ const DmInput = () => {
             value={chatMessage}
             onChange={updateChatMessage}
             onKeyDown={() => {
-              socket?.emit("typing", currentRoom);
+              socket?.emit("typing", recipientID, true);
             }}
             id="input"
             style={{

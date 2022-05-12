@@ -42,9 +42,15 @@ export default (io: Server, socket: Socket) => {
     }
   });
 
-  socket.on("typing", (room) =>
-    socket.broadcast.to(room).emit("isTypingIndicator", socket.data.nickname)
-  );
+  socket.on("typing", (room, isPrivateChat) => {
+    if (isPrivateChat) {
+      let socketIDOfUser = getSocketID(room);
+      socket.broadcast
+        .to(socketIDOfUser!)
+        .emit("isTypingIndicator", socket.data.nickname);
+    } else
+      socket.broadcast.to(room).emit("isTypingIndicator", socket.data.nickname);
+  });
 
   // Room message functionality below
 
