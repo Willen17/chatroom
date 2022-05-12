@@ -1,5 +1,12 @@
 import { Server, Socket } from "socket.io";
-import { addMessageToMessageStore, getMessageHistoryFor } from "./messageStore";
+import {
+  addMessageToMessageStore,
+  getMessageHistoryFor,
+} from "./privateMessageStore";
+import {
+  addMessageToRoomMessageStore,
+  getRoomMessageHistory,
+} from "./roomMessageStore";
 import { getRooms } from "./roomStore";
 import { getSocketID } from "./userStore";
 
@@ -39,14 +46,25 @@ export default (io: Server, socket: Socket) => {
     socket.broadcast.to(room).emit("isTypingIndicator", socket.data.nickname)
   );
 
+  // Room message functionality below
+
   socket.on("message", (message, to) => {
     if (!socket.data.nickname) {
       return socket.emit("_error", "Missing nickname on socket");
     }
+    addMessageToRoomMessageStore(to, message, socket.data.userID);
+
     io.to(to).emit("message", message, {
       id: socket.data.userID,
       nickname: socket.data.nickname,
     });
+  });
+
+  socket.on("getRoomMessageHistory", (room) => {
+    let history = getRoomMessageHistory(room);
+    console.log(history);
+
+    socket.emit("sendRoomMessageHistory", history);
   });
 
   socket.on("leave", (room) => {
