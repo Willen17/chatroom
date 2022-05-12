@@ -1,7 +1,6 @@
 import { Box, Button, Grow, List, ListItem, Typography } from "@mui/material";
 import React, { useState } from "react";
 import { useSocket } from "./SocketContext";
-import { Link } from "react-router-dom";
 
 const ListOfRooms = () => {
   const {
@@ -14,6 +13,7 @@ const ListOfRooms = () => {
   } = useSocket();
   const [checked, setChecked] = useState(false);
 
+  // handle click to enter room
   const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     let theRoom = e.currentTarget.innerText;
@@ -23,7 +23,8 @@ const ListOfRooms = () => {
     }
   };
 
-  const showClients = (e: React.MouseEvent<HTMLButtonElement>) => {
+  // show the list of clients in room on click
+  const showClients = () => {
     checked ? setChecked(false) : setChecked(true);
   };
 

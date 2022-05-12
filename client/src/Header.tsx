@@ -10,11 +10,14 @@ interface Props {
 
 const Header = (props: Props) => {
   const [openMenu, setOpenMenu] = useState(false);
+
+  // open header menu
   const handleMenuOpen = () => {
     setOpenMenu(true);
     props.setMenuIsOpen(true);
   };
 
+  // close header menu
   const handleMenuClose = () => {
     setOpenMenu(false);
     props.setMenuIsOpen(false);

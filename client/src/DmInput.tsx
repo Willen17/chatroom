@@ -1,35 +1,31 @@
 import { Logout, Send } from "@mui/icons-material";
-import { Box, Typography, Button } from "@mui/material";
-import { useState, useEffect, CSSProperties } from "react";
-import { DirectMessage } from "../../types";
+import { Box, Button, Typography } from "@mui/material";
+import { CSSProperties, useEffect, useState } from "react";
 import IsTypingBlock from "./components/IsTypingBlock";
 import { useSocket } from "./SocketContext";
 
 const DmInput = () => {
   const {
     socket,
-    currentRoom,
     leaveRoom,
     dmList,
-    nickname,
     recipientID,
     currentUser,
     allConnectedUsers,
   } = useSocket();
   const [chatMessage, setChatMessage] = useState<string>("");
 
+  // save the input value to a state
   const updateChatMessage = (e: React.ChangeEvent<HTMLInputElement>) => {
     setChatMessage(e.target.value);
   };
-
-  console.log("from dminput");
-  console.log(dmList);
 
   useEffect(() => {
     const msgElement = document.getElementById("messages");
     msgElement!.scrollTo(0, msgElement!.scrollHeight);
   }, [dmList]);
 
+  // handle send message
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (chatMessage.length) {
@@ -40,6 +36,7 @@ const DmInput = () => {
     }
   };
 
+  // get username from userID
   const getUserName = (id: string) => {
     let user = allConnectedUsers.find((user) => user.userID === id);
     return user?.username;
@@ -235,7 +232,7 @@ const blockAndFormDivStyle: CSSProperties = {
   padding: "0.25rem",
   position: "fixed",
   bottom: 0,
-  left: "20vw",
+  left: "0vw",
   right: 0,
   display: "flex",
   flexDirection: "column",

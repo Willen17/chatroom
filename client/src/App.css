@@ -3,20 +3,3 @@ body {
   font-family: "League Spartan", sans-serif;
   box-sizing: border-box;
 }
-
-#input:focus {
-  outline: none;
-}
-
-#messages > li {
-  padding: 0.5rem 1rem;
-}
-
-.inputNameContainer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  gap: 1rem;
-  height: 100vh;
-}

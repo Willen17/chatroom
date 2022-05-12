@@ -7,28 +7,27 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
-
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import backgroundIMG from "./assets/background-room.png";
 import { useSocket } from "./SocketContext";
 
 const RoomInput = () => {
-  const { socket, enterRoom } = useSocket();
+  const { enterRoom } = useSocket();
   const [roomName, setRoomName] = useState<string>("");
-  const navigate = useNavigate();
   const matches = useMediaQuery("(max-width:650px)");
 
+  // save room name to a state
   const updateRoomName = (e: React.ChangeEvent<HTMLInputElement>) => {
     setRoomName(e.target.value);
   };
 
+  // handle submit of room name
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (roomName.length) {
       enterRoom(roomName);
     } else {
-      console.log("Room name cannot be empty");
+      alert("Room name cannot be empty");
     }
   };
 

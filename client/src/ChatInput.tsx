@@ -15,6 +15,7 @@ const ChatInput = () => {
   } = useSocket();
   const [chatMessage, setChatMessage] = useState<string>("");
 
+  // save the input value to a state
   const updateChatMessage = (e: React.ChangeEvent<HTMLInputElement>) => {
     setChatMessage(e.target.value);
   };

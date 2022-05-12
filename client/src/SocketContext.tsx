@@ -50,16 +50,6 @@ export const SocketContext = createContext<ContextType>({
   dmList: [{ content: "", from: "" }],
 });
 
-// {
-//   'Millie': []
-//   'David': []
-//   'My': []
-// }
-
-// const object: {[key: string]: DirectMessage[]} = {}
-// const map = new Map<string, DirectMessage[]>()
-// map.get('David')
-
 const SocketProvider: React.FC<Props> = ({ children }) => {
   const [socket] = useState<Socket<ServerToClientEvents, ClientToServerEvents>>(
     () => {
@@ -84,21 +74,20 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
   });
   const [recipientID, setRecipientID] = useState<string>("");
   const [allConnectedUsers, setAllConnectedUsers] = useState<User[]>([]);
-  const [userNameAlreadySelected, setUsernameAlreadySelected] =
-    useState<boolean>(false);
   const navigate = useNavigate();
   const allConnectedUsersRef = useRef(allConnectedUsers);
   const currentUserRef = useRef(currentUser);
   const recipientIdRef = useRef(recipientID);
 
   useEffect(() => {
+    // use useRef to get the content of the state within the useEffect
     allConnectedUsersRef.current = allConnectedUsers;
     currentUserRef.current = currentUser;
     recipientIdRef.current = recipientID;
   });
 
   useEffect(() => {
-    //If the connection is succeded then this part runs
+    // if the connection is succeded then this part runs
     socket?.on("connected", (newUser) => {
       setNickname(newUser.username);
       setCurrentUser(newUser);
@@ -107,39 +96,30 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
     });
 
     const sessionID = localStorage.getItem("sessionID");
-
     if (sessionID) {
-      setUsernameAlreadySelected(true);
       socket.auth = { sessionID };
       socket.connect();
     }
 
+    // attach the session ID to the next reconnection attempts and store it in the localStorage
     socket.on("initSession", ({ sessionID, userID }) => {
-      console.log(sessionID + "this userID: ", userID);
-      // attach the session ID to the next reconnection attempts
       socket.auth = { sessionID };
-
-      // store it in the localStorage
       localStorage.setItem("sessionID", sessionID);
-
-      // save the ID of the user
-      // socket.userID = userID
     });
 
-    //If the connection part fails, this code runs, i.e the nickname is shorter than 3 characters.
+    // if the connection part fails, this code runs, i.e the nickname is shorter than 3 characters.
     socket?.on("connect_error", (err) => {
-      if (err.message === "Invalid nickname") {
-        console.log("You have entered an invalid username, try again.");
-      }
+      if (err.message === "Invalid nickname")
+        alert("You have entered an invalid username, try again.");
     });
 
+    // save all connected user to a state
     socket?.on("users", (users) => {
       setAllConnectedUsers(users);
     });
 
     // to list all rooms, put in a use effect
     socket.on("roomList", (listofRooms) => {
-      console.log(listofRooms);
       setRooms(listofRooms);
     });
 
@@ -152,9 +132,9 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
       setMessageList((messagesList) => [...messagesList, messageObject]);
     });
 
+    // retrieve the room history and navigate the user to chat
     socket?.on("joined", (room) => {
       socket.emit("getRoomMessageHistory", room);
-      console.log("Joined room: ", room);
       navigate("/chat");
     });
 
@@ -166,8 +146,8 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
       }
     });
 
+    // retrive the dm history between 2 clients and navigate
     socket.on("sendUserID", (otherUserID) => {
-      console.log(otherUserID);
       setRecipientID(otherUserID);
       socket.emit(
         "getPrivateMessageHistory",
@@ -177,33 +157,21 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
       setTimeout(() => {
         navigate("/dm");
       }, 1000);
-      // socket.emit(
-      //   "join",
-      //   `${currentUserRef.current.userID}&${otherUserID}`,
-      //   true
-      // );
     });
 
     // set leave room of user
     socket.on("left", (room) => {
-      console.log("Left room: ", room);
       navigate("/room");
     });
 
     // send private message between connected users
     socket.on("privateMessage", (content, from) => {
       if (from === currentUserRef.current.userID) {
-        console.log("from self");
       } else {
         let username = allConnectedUsersRef.current.find(
           (user) => user.userID === from
         );
-        console.log(`New message from ${username?.username}`);
-        // let foundIndex = allConnectedUsersRef.current.findIndex(
-        //   (user) => user.userID === username?.userID
-        // );
-        // console.log(allConnectedUsersRef.current[foundIndex]);
-        // setAllConnectedUsers([]);
+        console.log(`New message from ${username?.username}`); // console.log for now
       }
 
       let messageObject: DirectMessage = {
@@ -215,8 +183,8 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
   }, [socket]);
 
   useEffect(() => {
+    // add the room message history to a state if it is not empty
     socket.on("sendRoomMessageHistory", (history) => {
-      console.log(history);
       if (history) {
         setMessageList(history);
       } else setMessageList([]);
@@ -224,17 +192,17 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
   }, [currentRoom]);
 
   useEffect(() => {
+    // add the private message history to a state if it is not empty
     socket.on("sendPrivateMessageHistory", (messagesHistory) => {
-      console.log(messagesHistory);
       if (messagesHistory) {
         setDmList(messagesHistory);
       } else setDmList([]);
     });
   }, [recipientID]);
 
+  // set current room to a state and inform the serve "join"
   const enterRoom = (room: string) => {
     setCurrentRoom(room);
-
     socket!.emit("join", room);
   };
 
@@ -243,18 +211,12 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
     socket!.emit("leave", currentRoom);
   };
 
+  // handle open DM when a user clicks on a user name on the user list
   const handleOpenDM = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     let selectedUser = e.currentTarget.innerText;
-    console.log(selectedUser);
     socket.emit("getUserID", selectedUser);
   };
-
-  // console.log(dmList);
-  // console.log(messageList);
-
-  console.log(allConnectedUsers);
-  console.log(currentUser);
 
   return (
     <SocketContext.Provider
