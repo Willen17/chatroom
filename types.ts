@@ -1,5 +1,6 @@
 export interface ServerToClientEvents {
   message: (message: string, from: { id: string; nickname: string }) => void;
+  sendRoomMessageHistory: (messages: MessageType[]) => void;
   connected: (user: User) => void;
   roomList: (rooms: ChatRoom[]) => void;
   joined: (room: string) => void;
@@ -15,6 +16,7 @@ export interface ServerToClientEvents {
 
 export interface ClientToServerEvents {
   message: (message: string, to: string) => void;
+  getRoomMessageHistory: (room: string) => void;
   join: (room: string, privateChat?: boolean | undefined) => void;
   typing: (room: string) => void;
   leave: (room: string) => void;
@@ -55,4 +57,9 @@ export interface DirectMessage {
 export interface ChatRoom {
   name: string;
   sockets: ServerSocketData[];
+}
+
+export interface MessageType {
+  message: string;
+  from: string;
 }
