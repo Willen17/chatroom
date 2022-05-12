@@ -27,7 +27,7 @@ const DmInput = () => {
 
   useEffect(() => {
     const msgElement = document.getElementById("messages");
-    msgElement!.scrollTo(0, document.body.scrollHeight);
+    msgElement!.scrollTo(0, msgElement!.scrollHeight);
   }, [dmList]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -112,7 +112,7 @@ const DmInput = () => {
         }}
       >
         {dmList?.map((message, index) => (
-          <li key={index}>
+          <li key={index} style={{ marginBottom: "5rem" }}>
             {message.from === currentUser.userID ? (
               <Box
                 sx={{
