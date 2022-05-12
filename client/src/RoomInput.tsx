@@ -7,13 +7,14 @@ import {
   Typography,
   useMediaQuery,
 } from "@mui/material";
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import backgroundIMG from "./assets/background-room.png";
 import { useSocket } from "./SocketContext";
 
 const RoomInput = () => {
-  const { socket, setCurrentRoom } = useSocket();
+  const { socket, enterRoom } = useSocket();
   const [roomName, setRoomName] = useState<string>("");
   const navigate = useNavigate();
   const matches = useMediaQuery("(max-width:650px)");
@@ -25,20 +26,11 @@ const RoomInput = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (roomName.length) {
-      socket!.emit("join", roomName);
-      console.log("från under room");
-      setCurrentRoom(roomName);
+      enterRoom(roomName);
     } else {
       console.log("Room name cannot be empty");
     }
   };
-
-  useEffect(() => {
-    socket?.on("joined", (room) => {
-      console.log("Joined room: ", room);
-      navigate("/chat");
-    });
-  }, [socket]);
 
   return (
     <Box

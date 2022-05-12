@@ -8,7 +8,7 @@ const ListOfRooms = () => {
     rooms,
     currentRoom,
     socket,
-    setCurrentRoom,
+    enterRoom,
     allConnectedUsers,
     handleOpenDM,
   } = useSocket();
@@ -19,9 +19,7 @@ const ListOfRooms = () => {
     let theRoom = e.currentTarget.innerText;
     if (theRoom) {
       socket!.emit("leave", currentRoom);
-      setCurrentRoom(theRoom);
-      socket!.emit("join", theRoom);
-      console.log("från under room");
+      enterRoom(theRoom);
     }
   };
 
