@@ -47,7 +47,7 @@ export const SocketContext = createContext<ContextType>({
   setLoggedIn: () => {},
   leaveRoom: () => {},
   messageList: [],
-  currentUser: { userID: "", username: "", isConnected: false },
+  currentUser: { userID: "", username: "", isConnected: false, socketID: "" },
   allConnectedUsers: [],
   handleOpenDM: () => {},
   recipientID: "",
@@ -84,6 +84,7 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
     userID: "",
     username: "",
     isConnected: false,
+    socketID: "",
   });
   const [recipientID, setRecipientID] = useState<string>("");
   const [allConnectedUsers, setAllConnectedUsers] = useState<User[]>([]);
@@ -163,11 +164,29 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
       }
     });
 
-    socket.on("sendUserID", (userID) => {
-      setRecipientID(userID);
+    socket.on("sendUserID", (otherUserID) => {
+      console.log(otherUserID);
+      setRecipientID(otherUserID);
+      socket.emit(
+        "getPrivateMessageHistory",
+        otherUserID,
+        currentUserRef.current.userID
+      );
       setTimeout(() => {
         navigate("/dm");
-      }, 500);
+      }, 1000);
+      // socket.emit(
+      //   "join",
+      //   `${currentUserRef.current.userID}&${otherUserID}`,
+      //   true
+      // );
+    });
+
+    socket.on("sendPrivateMessageHistory", (messagesHistory) => {
+      console.log(messagesHistory);
+      if (messagesHistory) {
+        setDmList(messagesHistory);
+      } else setDmList([]);
     });
 
     // set leave room of user
@@ -209,12 +228,12 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
     e.preventDefault();
     let selectedUser = e.currentTarget.innerText;
     console.log(selectedUser);
-
     socket.emit("getUserID", selectedUser);
   };
 
   // console.log(dmList);
   // console.log(messageList);
+
   console.log(allConnectedUsers);
   console.log(currentUser);
 
