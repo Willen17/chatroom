@@ -5,6 +5,7 @@ import {
   ChatRoom,
   ClientToServerEvents,
   DirectMessage,
+  MessageType,
   ServerToClientEvents,
   User,
 } from "../../types";
@@ -13,7 +14,7 @@ interface ContextType {
   socket: Socket<ServerToClientEvents, ClientToServerEvents> | undefined;
   nickname: string;
   rooms: ChatRoom[];
-  setCurrentRoom: React.Dispatch<React.SetStateAction<string>>;
+  enterRoom: (room: string) => void;
   currentRoom: string;
   isTypingBlock: string;
   loggedIn: boolean;
@@ -27,11 +28,6 @@ interface ContextType {
   recipientID: string;
 }
 
-interface MessageType {
-  message: string;
-  from: string;
-}
-
 type Props = {
   children: React.ReactNode;
 };
@@ -40,7 +36,7 @@ export const SocketContext = createContext<ContextType>({
   socket: undefined,
   nickname: "",
   rooms: [],
-  setCurrentRoom: () => {},
+  enterRoom: () => {},
   currentRoom: "",
   isTypingBlock: "",
   loggedIn: false,
@@ -156,6 +152,12 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
       setMessageList((messagesList) => [...messagesList, messageObject]);
     });
 
+    socket?.on("joined", (room) => {
+      socket.emit("getRoomMessageHistory", room);
+      console.log("Joined room: ", room);
+      navigate("/chat");
+    });
+
     // fetch the typing status of user
     socket.on("isTypingIndicator", (nickname: string) => {
       if (nickname) {
@@ -213,6 +215,15 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
   }, [socket]);
 
   useEffect(() => {
+    socket.on("sendRoomMessageHistory", (history) => {
+      console.log(history);
+      if (history) {
+        setMessageList(history);
+      } else setMessageList([]);
+    });
+  }, [currentRoom]);
+
+  useEffect(() => {
     socket.on("sendPrivateMessageHistory", (messagesHistory) => {
       console.log(messagesHistory);
       if (messagesHistory) {
@@ -220,6 +231,12 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
       } else setDmList([]);
     });
   }, [recipientID]);
+
+  const enterRoom = (room: string) => {
+    setCurrentRoom(room);
+
+    socket!.emit("join", room);
+  };
 
   // leave a chatroom and be redirected to roomInput
   const leaveRoom = () => {
@@ -245,7 +262,7 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
         socket,
         nickname,
         rooms,
-        setCurrentRoom,
+        enterRoom,
         currentRoom,
         isTypingBlock,
         loggedIn,
