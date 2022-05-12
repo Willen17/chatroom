@@ -27,7 +27,7 @@ const RoomInput = () => {
     if (roomName.length) {
       enterRoom(roomName);
     } else {
-      alert("Room name cannot be empty");
+      console.log("Room name cannot be empty");
     }
   };
 

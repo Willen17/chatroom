@@ -110,7 +110,7 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
     // if the connection part fails, this code runs, i.e the nickname is shorter than 3 characters.
     socket?.on("connect_error", (err) => {
       if (err.message === "Invalid nickname")
-        alert("You have entered an invalid username, try again.");
+        console.log("You have entered an invalid username, try again.");
     });
 
     // save all connected user to a state
@@ -139,12 +139,24 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
     });
 
     // fetch the typing status of user
-    socket.on("isTypingIndicator", (nickname: string) => {
-      if (nickname) {
-        setIsTypingBlock(`${nickname} is typing...`);
-        setTimeout(() => setIsTypingBlock(""), 2000);
+    socket.on(
+      "isTypingIndicator",
+      (nickname: string, privateChat?: boolean) => {
+        if (privateChat && nickname) {
+          let userWhoIsTyping = allConnectedUsersRef.current.find(
+            (user) => user.username === nickname
+          );
+          if (userWhoIsTyping?.userID === recipientID) {
+            setIsTypingBlock(`${nickname} is typing...`);
+            setTimeout(() => setIsTypingBlock(""), 2000);
+          } else return;
+        }
+        if (nickname) {
+          setIsTypingBlock(`${nickname} is typing...`);
+          setTimeout(() => setIsTypingBlock(""), 2000);
+        }
       }
-    });
+    );
 
     // retrive the dm history between 2 clients and navigate
     socket.on("sendUserID", (otherUserID) => {

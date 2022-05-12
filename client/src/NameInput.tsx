@@ -30,7 +30,7 @@ const NameInput = () => {
       socket!.auth = { nickname: userName };
       socket!.connect();
     } else {
-      alert("Username cannot be empty");
+      console.log("Username cannot be empty");
     }
   };
 
