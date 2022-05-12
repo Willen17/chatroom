@@ -17,7 +17,7 @@ export interface ServerToClientEvents {
 export interface ClientToServerEvents {
   message: (message: string, to: string) => void;
   getRoomMessageHistory: (room: string) => void;
-  join: (room: string, privateChat?: boolean | undefined) => void;
+  join: (room: string) => void;
   typing: (room: string, isPrivateChat?: boolean) => void;
   leave: (room: string) => void;
   getUserID: (username: string) => void;
