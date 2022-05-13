@@ -12,7 +12,6 @@ import {
 
 interface ContextType {
   socket: Socket<ServerToClientEvents, ClientToServerEvents> | undefined;
-  nickname: string;
   rooms: ChatRoom[];
   enterRoom: (room: string) => void;
   currentRoom: string;
@@ -34,7 +33,6 @@ type Props = {
 
 export const SocketContext = createContext<ContextType>({
   socket: undefined,
-  nickname: "",
   rooms: [],
   enterRoom: () => {},
   currentRoom: "",
@@ -59,7 +57,6 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
       });
     }
   );
-  const [nickname, setNickname] = useState<string>("");
   const [currentRoom, setCurrentRoom] = useState<string>("");
   const [rooms, setRooms] = useState<ChatRoom[]>([]);
   const [isTypingBlock, setIsTypingBlock] = useState<string>("");
@@ -89,10 +86,27 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
   useEffect(() => {
     // if the connection is succeded then this part runs
     socket?.on("connected", (newUser) => {
-      setNickname(newUser.username);
       setCurrentUser(newUser);
       setLoggedIn(true);
-      navigate("/room");
+
+      // get prevChat in local storage
+      const prevChat = localStorage.getItem("prevChat")!;
+      // if nothing found
+      if (!prevChat || prevChat === "") {
+        navigate("/room");
+      } else {
+        // less than 20 means it is not an ID but a room name
+        if (prevChat.length < 20) {
+          enterRoom(prevChat);
+        } else {
+          // enter DM
+          setRecipientID(prevChat);
+          socket.emit("getPrivateMessageHistory", prevChat, newUser.userID);
+          setTimeout(() => {
+            navigate("/dm");
+          }, 1000);
+        }
+      }
     });
 
     const sessionID = localStorage.getItem("sessionID");
@@ -166,6 +180,7 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
         otherUserID,
         currentUserRef.current.userID
       );
+      localStorage.setItem("prevChat", otherUserID);
       setTimeout(() => {
         navigate("/dm");
       }, 1000);
@@ -219,6 +234,7 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
   // set current room to a state and inform the serve "join"
   const enterRoom = (room: string) => {
     setCurrentRoom(room);
+    localStorage.setItem("prevChat", room);
     socket!.emit("join", room);
   };
 
@@ -238,7 +254,6 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
     <SocketContext.Provider
       value={{
         socket,
-        nickname,
         rooms,
         enterRoom,
         currentRoom,

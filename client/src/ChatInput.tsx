@@ -10,7 +10,6 @@ const ChatInput = () => {
     currentRoom,
     leaveRoom,
     messageList,
-    nickname,
     allConnectedUsers,
     currentUser,
   } = useSocket();
