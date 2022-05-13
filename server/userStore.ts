@@ -16,6 +16,7 @@ export function getUsers(io: IoServer): User[] {
     if (users.some((user) => user.userID === socket.data.userID)) {
       let index = users.findIndex((user) => user.userID === socket.data.userID);
       users[index].userID = socket.data.userID!;
+      users[index].socketID = socket.id!;
       // If isConnected is set to false, we keep it as false.
     } else if (users.some((user) => user.isConnected === false)) {
       let index = users.findIndex((user) => user.isConnected === false);
