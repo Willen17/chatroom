@@ -19,6 +19,7 @@ interface ContextType {
   loggedIn: boolean;
   setLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
   leaveRoom: () => void;
+  leaveDm: () => void;
   messageList: MessageType[];
   dmList: DirectMessage[];
   currentUser: User;
@@ -40,6 +41,7 @@ export const SocketContext = createContext<ContextType>({
   loggedIn: false,
   setLoggedIn: () => {},
   leaveRoom: () => {},
+  leaveDm: () => {},
   messageList: [],
   currentUser: { userID: "", username: "", isConnected: false, socketID: "" },
   allConnectedUsers: [],
@@ -90,7 +92,7 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
       setLoggedIn(true);
 
       // get prevChat in local storage
-      const prevChat = localStorage.getItem("prevChat")!;
+      const prevChat = localStorage.getItem("prevChat");
       // if nothing found
       if (!prevChat || prevChat === "") {
         navigate("/room");
@@ -188,7 +190,10 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
 
     // set leave room of user
     socket.on("left", (room) => {
-      navigate("/room");
+      if (!recipientID) {
+        localStorage.setItem("prevChat", "");
+        navigate("/room");
+      }
     });
 
     // send private message between connected users
@@ -233,6 +238,7 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
 
   // set current room to a state and inform the serve "join"
   const enterRoom = (room: string) => {
+    setRecipientID("");
     setCurrentRoom(room);
     localStorage.setItem("prevChat", room);
     socket!.emit("join", room);
@@ -243,10 +249,19 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
     socket!.emit("leave", currentRoom);
   };
 
+  const leaveDm = () => {
+    localStorage.setItem("prevChat", "");
+    navigate("/room");
+  };
+
   // handle open DM when a user clicks on a user name on the user list
   const handleOpenDM = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     let selectedUser = e.currentTarget.innerText;
+    if (currentRoom) {
+      leaveRoom();
+      setCurrentRoom("");
+    }
     socket.emit("getUserID", selectedUser);
   };
 
@@ -267,6 +282,7 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
         handleOpenDM,
         recipientID,
         dmList,
+        leaveDm,
       }}
     >
       {children}
