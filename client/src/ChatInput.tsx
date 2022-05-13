@@ -12,6 +12,7 @@ const ChatInput = () => {
     messageList,
     nickname,
     allConnectedUsers,
+    currentUser,
   } = useSocket();
   const [chatMessage, setChatMessage] = useState<string>("");
 
@@ -109,7 +110,7 @@ const ChatInput = () => {
       >
         {messageList?.map((message, index) => (
           <li key={index} style={{ marginBottom: "5rem" }}>
-            {message.from === nickname ? (
+            {message.from === currentUser.userID ? (
               <Box
                 sx={{
                   bgcolor: "#E07A5F",
@@ -129,7 +130,7 @@ const ChatInput = () => {
                   sx={{ textAlign: "end" }}
                 >
                   <span style={{ color: "#F2CC8F", fontSize: "12px" }}>
-                    {message.from} <br />
+                    You <br />
                   </span>{" "}
                   {message.message}
                 </Typography>
