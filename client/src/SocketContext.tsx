@@ -195,7 +195,6 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
     // set leave room of user
     socket.on("left", (room) => {
       if (!recipientIdRef.current) {
-        setCurrentRoom("");
         navigate("/room");
       }
       return;
@@ -243,6 +242,9 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
 
   // set current room to a state and inform the serve "join"
   const enterRoom = (room: string) => {
+    if (currentRoomRef.current) {
+      socket!.emit("leave", currentRoom);
+    }
     setRecipientID("");
     setCurrentRoom(room);
     localStorage.setItem("prevChat", room);
@@ -252,8 +254,8 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
   // leave a chatroom and be redirected to roomInput
   const leaveRoom = () => {
     localStorage.setItem("prevChat", "");
-    setRecipientID("");
     socket!.emit("leave", currentRoom);
+    setCurrentRoom("");
   };
 
   const leaveDm = () => {
