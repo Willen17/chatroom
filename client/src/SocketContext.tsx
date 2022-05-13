@@ -156,16 +156,16 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
     socket.on(
       "isTypingIndicator",
       (nickname: string, privateChat?: boolean) => {
-        if (privateChat && nickname) {
+        if (privateChat) {
           let userWhoIsTyping = allConnectedUsersRef.current.find(
             (user) => user.username === nickname
           );
-          if (userWhoIsTyping?.userID === recipientID) {
+          if (userWhoIsTyping?.userID === recipientIdRef.current) {
             setIsTypingBlock(`${nickname} is typing...`);
             setTimeout(() => setIsTypingBlock(""), 2000);
+            return;
           } else return;
-        }
-        if (nickname) {
+        } else {
           setIsTypingBlock(`${nickname} is typing...`);
           setTimeout(() => setIsTypingBlock(""), 2000);
         }
@@ -193,19 +193,23 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
 
     // send private message between connected users
     socket.on("privateMessage", (content, from) => {
+      let messageObject: DirectMessage = {
+        content,
+        from,
+      };
       if (from === currentUserRef.current.userID) {
+        setDmList((dmList) => [...dmList, messageObject]);
       } else {
         let username = allConnectedUsersRef.current.find(
           (user) => user.userID === from
         );
         console.log(`New message from ${username?.username}`); // console.log for now
+        if (from === recipientIdRef.current) {
+          setDmList((dmList) => [...dmList, messageObject]);
+        } else {
+          console.log("error", from, recipientID);
+        }
       }
-
-      let messageObject: DirectMessage = {
-        content,
-        from,
-      };
-      setDmList((dmList) => [...dmList, messageObject]);
     });
   }, [socket]);
 
