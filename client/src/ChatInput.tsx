@@ -12,6 +12,7 @@ const ChatInput = () => {
     messageList,
     nickname,
     allConnectedUsers,
+    currentUser,
   } = useSocket();
   const [chatMessage, setChatMessage] = useState<string>("");
 
@@ -100,16 +101,17 @@ const ChatInput = () => {
         id="messages"
         style={{
           listStyleType: "none",
-          margin: 0,
-          padding: "1rem 0",
-          height: "calc(100vh - 12rem)",
+          marginBottom: "3rem",
+          marginTop: 0,
+          padding: "1rem .5rem",
+          height: "calc(100vh - 15rem)",
           overflowY: "scroll",
           scrollBehavior: "smooth",
         }}
       >
         {messageList?.map((message, index) => (
           <li key={index} style={{ marginBottom: "5rem" }}>
-            {message.from === nickname ? (
+            {message.from === currentUser.userID ? (
               <Box
                 sx={{
                   bgcolor: "#E07A5F",
@@ -129,7 +131,7 @@ const ChatInput = () => {
                   sx={{ textAlign: "end" }}
                 >
                   <span style={{ color: "#F2CC8F", fontSize: "12px" }}>
-                    {message.from} <br />
+                    You <br />
                   </span>{" "}
                   {message.message}
                 </Typography>
@@ -183,6 +185,7 @@ const ChatInput = () => {
         >
           <input
             type="text"
+            autoComplete="off"
             value={chatMessage}
             onChange={updateChatMessage}
             onKeyDown={() => {
