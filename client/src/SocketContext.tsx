@@ -24,7 +24,6 @@ interface ContextType {
   currentUser: User;
   allConnectedUsers: User[];
   handleOpenDM: (e: React.MouseEvent<HTMLButtonElement>) => void;
-  getUsername: (id: string) => void;
   recipientID: string;
 }
 
@@ -45,7 +44,6 @@ export const SocketContext = createContext<ContextType>({
   currentUser: { userID: "", username: "", isConnected: false, socketID: "" },
   allConnectedUsers: [],
   handleOpenDM: () => {},
-  getUsername: () => {},
   recipientID: "",
   dmList: [{ content: "", from: "" }],
 });
@@ -248,12 +246,6 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
     socket.emit("getUserID", selectedUser);
   };
 
-  // get username from userID
-  const getUsername = (id: string) => {
-    let user = allConnectedUsers.find((user) => user.userID === id);
-    return user?.username;
-  };
-
   return (
     <SocketContext.Provider
       value={{
@@ -269,7 +261,6 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
         currentUser,
         allConnectedUsers,
         handleOpenDM,
-        getUsername,
         recipientID,
         dmList,
       }}
