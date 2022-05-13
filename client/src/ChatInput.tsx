@@ -7,10 +7,10 @@ import { useSocket } from "./SocketContext";
 const ChatInput = () => {
   const {
     socket,
+    currentUser,
     currentRoom,
     leaveRoom,
     messageList,
-    nickname,
     allConnectedUsers,
   } = useSocket();
   const [chatMessage, setChatMessage] = useState<string>("");
@@ -101,7 +101,7 @@ const ChatInput = () => {
         style={{
           listStyleType: "none",
           margin: 0,
-          padding: "1rem 0",
+          padding: "1rem",
           height: "calc(100vh - 12rem)",
           overflowY: "scroll",
           scrollBehavior: "smooth",
@@ -109,7 +109,7 @@ const ChatInput = () => {
       >
         {messageList?.map((message, index) => (
           <li key={index} style={{ marginBottom: "5rem" }}>
-            {message.from === nickname ? (
+            {message.from === currentUser.userID ? (
               <Box
                 sx={{
                   bgcolor: "#E07A5F",
@@ -129,7 +129,7 @@ const ChatInput = () => {
                   sx={{ textAlign: "end" }}
                 >
                   <span style={{ color: "#F2CC8F", fontSize: "12px" }}>
-                    {message.from} <br />
+                    You <br />
                   </span>{" "}
                   {message.message}
                 </Typography>
