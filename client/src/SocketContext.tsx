@@ -77,12 +77,14 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
   const allConnectedUsersRef = useRef(allConnectedUsers);
   const currentUserRef = useRef(currentUser);
   const recipientIdRef = useRef(recipientID);
+  const currentRoomRef = useRef(currentRoom);
 
   useEffect(() => {
     // use useRef to get the content of the state within the useEffect
     allConnectedUsersRef.current = allConnectedUsers;
     currentUserRef.current = currentUser;
     recipientIdRef.current = recipientID;
+    currentRoomRef.current = currentRoom;
   });
 
   useEffect(() => {
@@ -182,7 +184,9 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
         otherUserID,
         currentUserRef.current.userID
       );
+
       localStorage.setItem("prevChat", otherUserID);
+
       setTimeout(() => {
         navigate("/dm");
       }, 1000);
@@ -190,10 +194,11 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
 
     // set leave room of user
     socket.on("left", (room) => {
-      if (!recipientID) {
-        localStorage.setItem("prevChat", "");
+      if (!recipientIdRef.current) {
+        setCurrentRoom("");
         navigate("/room");
       }
+      return;
     });
 
     // send private message between connected users
@@ -246,11 +251,14 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
 
   // leave a chatroom and be redirected to roomInput
   const leaveRoom = () => {
+    localStorage.setItem("prevChat", "");
+    setRecipientID("");
     socket!.emit("leave", currentRoom);
   };
 
   const leaveDm = () => {
     localStorage.setItem("prevChat", "");
+    setRecipientID("");
     navigate("/room");
   };
 
@@ -258,10 +266,7 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
   const handleOpenDM = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     let selectedUser = e.currentTarget.innerText;
-    if (currentRoom) {
-      leaveRoom();
-      setCurrentRoom("");
-    }
+    leaveRoom();
     socket.emit("getUserID", selectedUser);
   };
 
