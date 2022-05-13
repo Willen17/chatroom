@@ -12,7 +12,6 @@ import {
 
 interface ContextType {
   socket: Socket<ServerToClientEvents, ClientToServerEvents> | undefined;
-  nickname: string;
   rooms: ChatRoom[];
   enterRoom: (room: string) => void;
   currentRoom: string;
@@ -34,7 +33,6 @@ type Props = {
 
 export const SocketContext = createContext<ContextType>({
   socket: undefined,
-  nickname: "",
   rooms: [],
   enterRoom: () => {},
   currentRoom: "",
@@ -59,7 +57,6 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
       });
     }
   );
-  const [nickname, setNickname] = useState<string>("");
   const [currentRoom, setCurrentRoom] = useState<string>("");
   const [rooms, setRooms] = useState<ChatRoom[]>([]);
   const [isTypingBlock, setIsTypingBlock] = useState<string>("");
@@ -89,7 +86,6 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
   useEffect(() => {
     // if the connection is succeded then this part runs
     socket?.on("connected", (newUser) => {
-      setNickname(newUser.username);
       setCurrentUser(newUser);
       setLoggedIn(true);
       navigate("/room");
@@ -127,7 +123,7 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
     socket.on("message", (message, from) => {
       let messageObject: MessageType = {
         message: message,
-        from: from.nickname,
+        from: from.id,
       };
       setMessageList((messagesList) => [...messagesList, messageObject]);
     });
@@ -234,7 +230,6 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
     <SocketContext.Provider
       value={{
         socket,
-        nickname,
         rooms,
         enterRoom,
         currentRoom,
