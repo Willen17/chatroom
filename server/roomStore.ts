@@ -1,6 +1,7 @@
 import { Server } from "socket.io";
-import { ChatRoom, ServerSocketData, User } from "../types";
+import { ChatRoom, ServerSocketData } from "../types";
 
+// get the full list of rooms
 export function getRooms(io: Server): ChatRoom[] {
   const rooms: ChatRoom[] = [];
   for (const [id, socketIds] of io.sockets.adapter.rooms) {

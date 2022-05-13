@@ -5,12 +5,11 @@ import {
   InterServerEvents,
   ServerSocketData,
   ServerToClientEvents,
-  User,
 } from "../types";
 import registerChatHandler from "./chatHandler";
-import { getIDFromName, getUsers, setDisconnected } from "./userStore";
 import { getRooms } from "./roomStore";
 import { findSession, saveSession } from "./sessionStore";
+import { getIDFromName, getUsers, setDisconnected } from "./userStore";
 
 const io = new Server<
   ClientToServerEvents,

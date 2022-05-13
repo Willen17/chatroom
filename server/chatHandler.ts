@@ -1,7 +1,7 @@
 import { Server, Socket } from "socket.io";
 import {
-  addMessageToMessageStore,
-  getMessageHistoryFor,
+  addDmToPrivateMessageStore,
+  getDmHistoryFor,
 } from "./privateMessageStore";
 import {
   addMessageToRoomMessageStore,
@@ -14,13 +14,11 @@ export default (io: Server, socket: Socket) => {
   socket.on("join", async (room: string) => {
     socket.join(room);
     io.emit("roomList", getRooms(io));
-
-    // show a list of the clients in the room
+    // show a list of the clients in the room and add the new client in
     let roomUsers: string[] = [];
     (await io.in(room).fetchSockets()).map((item) =>
       roomUsers.push(item.data.nickname)
     );
-    // io.emit("ListOfClientsInRoom", roomUsers);
     socket.emit("joined", room);
   });
 
@@ -36,6 +34,7 @@ export default (io: Server, socket: Socket) => {
         .emit("isTypingIndicator", socket.data.nickname, false);
   });
 
+  // actions taken when a client leaves the room and update room list
   socket.on("leave", (room) => {
     socket.leave(room);
     console.log("user left the room");
@@ -43,8 +42,9 @@ export default (io: Server, socket: Socket) => {
     io.emit("roomList", getRooms(io));
   });
 
-  // Room message functionality below
+  /**  Room message functionality below */
 
+  // handle message from client side and emit back to sender and the recipients in the same room
   socket.on("message", (message, to) => {
     if (!socket.data.nickname) {
       return socket.emit("_error", "Missing nickname on socket");
@@ -57,22 +57,25 @@ export default (io: Server, socket: Socket) => {
     });
   });
 
+  // send message history of a room to client on this request
   socket.on("getRoomMessageHistory", (room) => {
     let history = getRoomMessageHistory(room);
     socket.emit("sendRoomMessageHistory", history);
   });
 
-  // DM functionality below
+  /**  DM functionality below */
 
+  // handle DM from client side and emit back to sender and the specific recipient
   socket.on("privateMessage", (content, to) => {
-    addMessageToMessageStore(socket.data.userID, to, content);
+    addDmToPrivateMessageStore(socket.data.userID, to, content);
     let idOfUser = getSocketID(to);
     socket.to(idOfUser!).emit("privateMessage", content, socket.data.userID);
     socket.emit("privateMessage", content, socket.data.userID);
   });
 
+  // send DM history of a room to client on this request
   socket.on("getPrivateMessageHistory", (id1, id2) => {
-    let history = getMessageHistoryFor(id1, id2);
+    let history = getDmHistoryFor(id1, id2);
     socket.emit("sendPrivateMessageHistory", history);
   });
 };
