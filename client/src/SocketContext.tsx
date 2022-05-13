@@ -24,6 +24,7 @@ interface ContextType {
   currentUser: User;
   allConnectedUsers: User[];
   handleOpenDM: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  getUsername: (id: string) => void;
   recipientID: string;
 }
 
@@ -44,6 +45,7 @@ export const SocketContext = createContext<ContextType>({
   currentUser: { userID: "", username: "", isConnected: false, socketID: "" },
   allConnectedUsers: [],
   handleOpenDM: () => {},
+  getUsername: () => {},
   recipientID: "",
   dmList: [{ content: "", from: "" }],
 });
@@ -88,7 +90,25 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
     socket?.on("connected", (newUser) => {
       setCurrentUser(newUser);
       setLoggedIn(true);
-      navigate("/room");
+
+      // get prevChat in local storage
+      const prevChat = localStorage.getItem("prevChat")!;
+      // if nothing found
+      if (!prevChat || prevChat === "") {
+        navigate("/room");
+      } else {
+        // less than 20 means it is not an ID but a room name
+        if (prevChat.length < 20) {
+          enterRoom(prevChat);
+        } else {
+          // enter DM
+          setRecipientID(prevChat);
+          socket.emit("getPrivateMessageHistory", prevChat, newUser.userID);
+          setTimeout(() => {
+            navigate("/dm");
+          }, 1000);
+        }
+      }
     });
 
     const sessionID = localStorage.getItem("sessionID");
@@ -162,6 +182,7 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
         otherUserID,
         currentUserRef.current.userID
       );
+      localStorage.setItem("prevChat", otherUserID);
       setTimeout(() => {
         navigate("/dm");
       }, 1000);
@@ -211,6 +232,7 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
   // set current room to a state and inform the serve "join"
   const enterRoom = (room: string) => {
     setCurrentRoom(room);
+    localStorage.setItem("prevChat", room);
     socket!.emit("join", room);
   };
 
@@ -224,6 +246,12 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
     e.preventDefault();
     let selectedUser = e.currentTarget.innerText;
     socket.emit("getUserID", selectedUser);
+  };
+
+  // get username from userID
+  const getUsername = (id: string) => {
+    let user = allConnectedUsers.find((user) => user.userID === id);
+    return user?.username;
   };
 
   return (
@@ -241,6 +269,7 @@ const SocketProvider: React.FC<Props> = ({ children }) => {
         currentUser,
         allConnectedUsers,
         handleOpenDM,
+        getUsername,
         recipientID,
         dmList,
       }}
