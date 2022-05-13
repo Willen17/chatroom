@@ -102,9 +102,10 @@ const DmInput = () => {
         id="messages"
         style={{
           listStyleType: "none",
-          margin: 0,
-          padding: "1rem 0",
-          height: "calc(100vh - 12rem)",
+          marginBottom: "3rem",
+          marginTop: 0,
+          padding: "1rem .5rem",
+          height: "calc(100vh - 15rem)",
           overflowY: "scroll",
           scrollBehavior: "smooth",
         }}
@@ -185,6 +186,7 @@ const DmInput = () => {
         >
           <input
             type="text"
+            autoComplete="off"
             value={chatMessage}
             onChange={updateChatMessage}
             onKeyDown={() => {
