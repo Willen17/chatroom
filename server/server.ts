@@ -5,12 +5,11 @@ import {
   InterServerEvents,
   ServerSocketData,
   ServerToClientEvents,
-  User,
 } from "../types";
 import registerChatHandler from "./chatHandler";
-import { getIDFromName } from "./directMessages";
-import { getRooms, getUsers, setDisconnected } from "./roomStore";
+import { getRooms } from "./roomStore";
 import { findSession, saveSession } from "./sessionStore";
+import { getIDFromName, getUsers, setDisconnected } from "./userStore";
 
 const io = new Server<
   ClientToServerEvents,
@@ -19,7 +18,10 @@ const io = new Server<
   ServerSocketData
 >({ path: "/socket" });
 
-io.use((socket: Socket, next) => {
+export type IoServer = typeof io;
+export type IoSocket = Socket<ClientToServerEvents, ServerToClientEvents>;
+
+io.use((socket, next) => {
   const sessionID = socket.handshake.auth.sessionID;
   if (sessionID) {
     //find existing session
@@ -28,6 +30,7 @@ io.use((socket: Socket, next) => {
       socket.data.sessionID = sessionID;
       socket.data.userID = session.userID;
       socket.data.nickname = session.nickname;
+      socket.data.socketID = socket.id;
       return next();
     }
   }
@@ -41,6 +44,7 @@ io.use((socket: Socket, next) => {
   socket.data.sessionID = randomUUID();
   socket.data.userID = randomUUID();
   socket.data.nickname = nickname;
+  socket.data.socketID = socket.id;
   next();
 });
 
@@ -51,6 +55,7 @@ io.on("connection", (socket) => {
     userID: socket.data.userID,
     nickname: socket.data.nickname,
     isConnected: socket.data.isConnected,
+    socketID: socket.id,
   });
 
   socket.emit("initSession", {
@@ -63,6 +68,7 @@ io.on("connection", (socket) => {
       userID: socket.data.userID!,
       username: socket.data.nickname,
       isConnected: socket.data.isConnected!,
+      socketID: socket.data.socketID!,
     });
 
     io.emit("users", getUsers(io));
@@ -72,7 +78,7 @@ io.on("connection", (socket) => {
   }
 
   socket.on("getUserID", (username) => {
-    socket.emit("sendUserID", getIDFromName(io, username));
+    socket.emit("sendUserID", getIDFromName(username));
   });
 
   socket.on("disconnect", function () {

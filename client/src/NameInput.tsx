@@ -13,15 +13,17 @@ import { ReactComponent as BirdLogo } from "./assets/bird.svg";
 import { useSocket } from "./SocketContext";
 
 const NameInput = () => {
-  const { socket, setLoggedIn } = useSocket();
+  const { socket } = useSocket();
   const [userName, setUserName] = useState<string>("");
   const matches = useMediaQuery("(max-width:650px)");
   const matches2 = useMediaQuery("(max-width:455px)");
 
+  // save the username to a state
   const updateName = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserName(e.target.value);
   };
 
+  // handle submit of usename input
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (userName.length) {

@@ -1,34 +1,31 @@
 import { Logout, Send } from "@mui/icons-material";
-import { Box, Typography, Button } from "@mui/material";
-import { useState, useEffect, CSSProperties } from "react";
+import { Box, Button, Typography } from "@mui/material";
+import { CSSProperties, useEffect, useState } from "react";
 import IsTypingBlock from "./components/IsTypingBlock";
 import { useSocket } from "./SocketContext";
 
 const DmInput = () => {
   const {
     socket,
-    currentRoom,
     leaveRoom,
     dmList,
-    nickname,
     recipientID,
     currentUser,
     allConnectedUsers,
   } = useSocket();
   const [chatMessage, setChatMessage] = useState<string>("");
 
+  // save the input value to a state
   const updateChatMessage = (e: React.ChangeEvent<HTMLInputElement>) => {
     setChatMessage(e.target.value);
   };
 
-  console.log("from dminput");
-  console.log(dmList);
-
   useEffect(() => {
     const msgElement = document.getElementById("messages");
-    msgElement!.scrollTo(0, document.body.scrollHeight);
+    msgElement!.scrollTo(0, msgElement!.scrollHeight);
   }, [dmList]);
 
+  // handle send message
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (chatMessage.length) {
@@ -39,11 +36,7 @@ const DmInput = () => {
     }
   };
 
-  useEffect(() => {
-    const messageList = document.getElementById("messages");
-    messageList!.innerHTML = "";
-  }, [recipientID]);
-
+  // get username from userID
   const getUserName = (id: string) => {
     let user = allConnectedUsers.find((user) => user.userID === id);
     return user?.username;
@@ -113,10 +106,11 @@ const DmInput = () => {
           padding: "1rem 0",
           height: "calc(100vh - 12rem)",
           overflowY: "scroll",
+          scrollBehavior: "smooth",
         }}
       >
         {dmList?.map((message, index) => (
-          <li key={index}>
+          <li key={index} style={{ marginBottom: "5rem" }}>
             {message.from === currentUser.userID ? (
               <Box
                 sx={{
@@ -194,7 +188,7 @@ const DmInput = () => {
             value={chatMessage}
             onChange={updateChatMessage}
             onKeyDown={() => {
-              socket?.emit("typing", currentRoom);
+              socket?.emit("typing", recipientID, true);
             }}
             id="input"
             style={{
@@ -238,7 +232,7 @@ const blockAndFormDivStyle: CSSProperties = {
   padding: "0.25rem",
   position: "fixed",
   bottom: 0,
-  left: "20vw",
+  left: "0vw",
   right: 0,
   display: "flex",
   flexDirection: "column",

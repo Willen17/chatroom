@@ -5,9 +5,17 @@ import IsTypingBlock from "./components/IsTypingBlock";
 import { useSocket } from "./SocketContext";
 
 const ChatInput = () => {
-  const { socket, currentRoom, leaveRoom, messageList, nickname } = useSocket();
+  const {
+    socket,
+    currentRoom,
+    leaveRoom,
+    messageList,
+    nickname,
+    allConnectedUsers,
+  } = useSocket();
   const [chatMessage, setChatMessage] = useState<string>("");
 
+  // save the input value to a state
   const updateChatMessage = (e: React.ChangeEvent<HTMLInputElement>) => {
     setChatMessage(e.target.value);
   };
@@ -27,10 +35,10 @@ const ChatInput = () => {
     }
   };
 
-  useEffect(() => {
-    const messageList = document.getElementById("messages");
-    messageList!.innerHTML = "";
-  }, [currentRoom]);
+  const getUserName = (id: string) => {
+    let user = allConnectedUsers.find((user) => user.userID === id);
+    return user?.username;
+  };
 
   return (
     <Box
@@ -96,6 +104,7 @@ const ChatInput = () => {
           padding: "1rem 0",
           height: "calc(100vh - 12rem)",
           overflowY: "scroll",
+          scrollBehavior: "smooth",
         }}
       >
         {messageList?.map((message, index) => (
@@ -144,7 +153,7 @@ const ChatInput = () => {
                   color="#3D405B"
                 >
                   <span style={{ color: "#F2CC8F", fontSize: "12px" }}>
-                    {message.from} <br />
+                    {getUserName(message.from)} <br />
                   </span>{" "}
                   {message.message}
                 </Typography>

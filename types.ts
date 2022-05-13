@@ -1,24 +1,28 @@
 export interface ServerToClientEvents {
   message: (message: string, from: { id: string; nickname: string }) => void;
+  sendRoomMessageHistory: (messages: MessageType[]) => void;
   connected: (user: User) => void;
   roomList: (rooms: ChatRoom[]) => void;
   joined: (room: string) => void;
   _error: (errorMessage: string) => void;
-  isTypingIndicator: (nickname: string, room: string) => void;
+  isTypingIndicator: (nickname: string, privateChat?: boolean) => void;
   left: (room: string) => void;
   users: (users: User[]) => void;
   sendUserID: (userID: string) => void;
   privateMessage: (content: string, from: string) => void;
   initSession: (session: SessionInterface) => void;
+  sendPrivateMessageHistory: (messages: DirectMessage[]) => void;
 }
 
 export interface ClientToServerEvents {
   message: (message: string, to: string) => void;
-  join: (room: string) => void;
-  typing: (room: string) => void;
+  getRoomMessageHistory: (room: string) => void;
+  join: (room: string, privateChat?: boolean | undefined) => void;
+  typing: (room: string, isPrivateChat?: boolean) => void;
   leave: (room: string) => void;
   getUserID: (username: string) => void;
   privateMessage: (content: string, to: string) => void;
+  getPrivateMessageHistory: (id1: string, id2: string) => void;
 }
 
 export interface SessionInterface {
@@ -34,12 +38,14 @@ export interface ServerSocketData {
   sessionID: string;
   userID: string;
   isConnected: boolean;
+  socketID: string;
 }
 
 export interface User {
   userID: string;
   username: string;
   isConnected: boolean;
+  socketID: string;
   messages?: DirectMessage[] | undefined;
 }
 
@@ -51,4 +57,9 @@ export interface DirectMessage {
 export interface ChatRoom {
   name: string;
   sockets: ServerSocketData[];
+}
+
+export interface MessageType {
+  message: string;
+  from: string;
 }

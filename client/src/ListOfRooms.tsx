@@ -1,31 +1,30 @@
 import { Box, Button, Grow, List, ListItem, Typography } from "@mui/material";
 import React, { useState } from "react";
 import { useSocket } from "./SocketContext";
-import { Link } from "react-router-dom";
 
 const ListOfRooms = () => {
   const {
     rooms,
     currentRoom,
     socket,
-    setCurrentRoom,
+    enterRoom,
     allConnectedUsers,
     handleOpenDM,
   } = useSocket();
   const [checked, setChecked] = useState(false);
 
+  // handle click to enter room
   const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     let theRoom = e.currentTarget.innerText;
     if (theRoom) {
       socket!.emit("leave", currentRoom);
-      setCurrentRoom(theRoom);
-      socket!.emit("join", theRoom);
-      console.log("från under room");
+      enterRoom(theRoom);
     }
   };
 
-  const showClients = (e: React.MouseEvent<HTMLButtonElement>) => {
+  // show the list of clients in room on click
+  const showClients = () => {
     checked ? setChecked(false) : setChecked(true);
   };
 
