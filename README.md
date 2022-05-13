@@ -1,6 +1,6 @@
 # Chatroom - with Socket.io & React Typescript
 
-This is our very first chat app, Chirp, that we created for users to gather and chat with others in real time. In this app, user can create his/her own chatroom with a customised title or join an existing room. 
+This is our very first chat app, Chirp, that we created for users to gather and chat with others in real time. In this app, user can not only create his/her own chatroom with a customised title or join an existing room, but also send private messages (DM) to other online users.  
 
 This project is created with React TS in frontend and Socket.io and nodeJS in backend. 
 
@@ -62,6 +62,6 @@ Krav för väl godkänt:
 
 - [x] 1. Alla punkter för godkänt är uppfyllda.
 - [x] 2. Varje rum i listan skall även visa vilka användare som finns i rummet .
-- [ ] 3. Det ska gå att ha privata konversationer med enskilda användare (DM’s).
-- [ ] 4. Historik ska sparas för skickade meddelanden och visas när en konversation öppnas (gäller både för Rum och för DM’s).
-- [ ] 5. När sidan laddas om ska användaren behålla sitt användarnamn, läggas tillbaka i konversationen som den befann sig i (Rum eller DM) och kunna sina läsa tidigare DM’s.
+- [x] 3. Det ska gå att ha privata konversationer med enskilda användare (DM’s).
+- [x] 4. Historik ska sparas för skickade meddelanden och visas när en konversation öppnas (gäller både för Rum och för DM’s).
+- [x] 5. När sidan laddas om ska användaren behålla sitt användarnamn, läggas tillbaka i konversationen som den befann sig i (Rum eller DM) och kunna sina läsa tidigare DM’s.
