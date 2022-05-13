@@ -7,7 +7,7 @@ import { useSocket } from "./SocketContext";
 const DmInput = () => {
   const {
     socket,
-    leaveRoom,
+    leaveDm,
     dmList,
     recipientID,
     currentUser,
@@ -92,7 +92,7 @@ const DmInput = () => {
               boxShadow: "none",
             },
           }}
-          onClick={leaveRoom}
+          onClick={leaveDm}
         >
           <Logout fontSize="small" />
         </Button>
