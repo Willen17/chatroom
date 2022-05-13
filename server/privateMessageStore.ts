@@ -2,7 +2,8 @@ import { DirectMessage } from "../types";
 
 let privateMessageStore = new Map<string, DirectMessage[]>();
 
-export const addMessageToMessageStore = (
+// save DMs in the private message store
+export const addDmToPrivateMessageStore = (
   from: string,
   to: string,
   content: string
@@ -12,26 +13,16 @@ export const addMessageToMessageStore = (
     privateMessageStore.set(chatName, []);
   }
   const chatHistory = privateMessageStore.get(chatName)!;
-
   chatHistory.push({ content, from });
 };
 
-export const getMessageHistoryFor = (id1: string, id2: string) => {
+// retrieve DM history of a specific chat from the private message store
+export const getDmHistoryFor = (id1: string, id2: string) => {
   const chatName = createPrivateRoomID(id1, id2);
-  console.log(chatName, " from messagehistory");
-
   return privateMessageStore.get(chatName);
 };
-// {
-//   'user1': []
-//   'David': []
-//   'My': []
-// }
 
-// const object: {[key: string]: DirectMessage[]} = {}
-// const map = new Map<string, DirectMessage[]>()
-// map.get('David')
-
+// create id for a private room by 2 IDs
 export const createPrivateRoomID = (id1: string, id2: string) => {
   if (id1 > id2) {
     return `${id1}&${id2}`;
